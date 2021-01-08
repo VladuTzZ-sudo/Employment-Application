@@ -1,0 +1,86 @@
+{
+    "companies":[
+        {
+            "name": "Amazon",
+            "departments":[
+                {
+                    "type": "IT"
+                },
+                {
+                    "type": "Management"
+                },
+                {
+                    "type": "Marketing"
+                },
+                {
+                    "type": "Finance"
+                }
+            ],
+            "jobs": [
+                {
+                    "name": "Software Developer Engineer",
+                    "noPosition": 1,
+                    "salary": 12000,
+                    "graduation-min": 2014,
+                    "graduation-max": 2020,
+                    "experience-min": 1,
+                    "experience-max": null,
+                    "average-min": 9,
+                    "average-max": null
+                },
+                {
+                    "name": "Software Developer Engineer Intern",
+                    "noPosition": 1,
+                    "salary": 6000,
+                    "graduation-min": null,
+                    "graduation-max": null,
+                    "experience-min": 0,
+                    "experience-max": 2,
+                    "average-min": 9.35,
+                    "average-max": null
+                }
+            ]
+        },
+        {
+            "name": "Google",
+            "departments":[
+                {
+                    "type": "IT"
+                },
+                {
+                    "type": "Management"
+                },
+                {
+                    "type": "Marketing"
+                },
+                {
+                    "type": "Finance"
+                }
+            ],
+            "jobs": [
+                {
+                    "name": "Software Developer Engineer",
+                    "noPosition": 1,
+                    "salary": 10000,
+                    "graduation-min": 2002,
+                    "graduation-max": 2020,
+                    "experience-min": 2,
+                    "experience-max": 6,
+                    "average-min": 8,
+                    "average-max": null
+                },
+                {
+                    "name": "Software Developer Engineer Intern",
+                    "noPosition": 1,
+                    "salary": 5000,
+                    "graduation-min": null,
+                    "graduation-max": null,
+                    "experience-min": 0,
+                    "experience-max": 2,
+                    "average-min": 9,
+                    "average-max": null
+                }
+            ]
+        }
+    ]
+}
