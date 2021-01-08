@@ -1,0 +1,13 @@
+In ceea ce priveste sabloanele de proiectare, am folosit:
+    1.1 Singleton pattern
+        Pentru a me asigura că fiecare utilizator are acces la informatiile aceluiasi obiect de tip Application.
+        
+    1.2 Observer pattern
+        În cadrul acestei aplicatiei voi folosi
+        pattern-ul Observer pentru a notifica candidatii (instantele clasei User) de fiecare dată când o companie pe
+        care o urmăresc adaugă un job nou, când este închis un job sau când au fost respinsi de la un job.
+        
+    1.3 Builder pattern
+        Deoarece citirea este destul de dificila, am folosit fisiere de tip JSON, am folosit un builder pattern pentru a crea de exemplu o clasa de tip Resume. (cv -ul user ului ).
+        
+    
