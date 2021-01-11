@@ -30,7 +30,7 @@ public class Job implements Subject{
         Application application = Application.getInstance();
         Company company1 = application.getCompany(company);
         Recruiter recruiter = company1.getRecruiter(user);
-        recruiter.evaluate(this, user);
+            recruiter.evaluate(this, user);
         if (!company1.users.contains(user)) {
             company1.addObserver(user);
         }
@@ -39,27 +39,28 @@ public class Job implements Subject{
 
     public boolean meetsRequirments(User user) {
         if (user.getGraduationYear() < anAbsolvire.inferior || user.getGraduationYear() > anAbsolvire.superior) {
-            //System.out.println(user.cv.information.getNume() + ": " + "false - graduation :" + company + " : " + name);
+            System.out.println(user.cv.information.getNume() + ": " + "false - graduation :" + company + " : " + name);
             return false;
         }
         if (user.meanGPA() < medieAcademica.inferior || user.meanGPA() > medieAcademica.superior) {
-            //System.out.println(user.cv.information.getNume() + ": " + "false - medie :" + company + " : " + name);
+            System.out.println(user.cv.information.getNume() + ": " + "false - medie :" + company + " : " + name);
             return false;
         }
+        System.out.println(user.cv.information.getNume() + ": " + "true - medie :" + user.meanGPA() + " : " + name);
         double AniExperienta = 0.0;
         for (Experience experience : user.cv.experiences) {
             AniExperienta = AniExperienta + experience.getDurata();
         }
-        if (AniExperienta % 12 > 0) {
-            AniExperienta = AniExperienta / 12 + 1;
+        if (AniExperienta % 12 > 0 ) {
+            AniExperienta = AniExperienta / 12 + (1 - AniExperienta / 12 % 1);
         } else {
             AniExperienta = AniExperienta / 12;
         }
         if (AniExperienta < aniExperienta.inferior || AniExperienta > aniExperienta.superior) {
-            //System.out.println(user.cv.information.getNume() + ": " + "false :" + company + " : " + name + AniExperienta);
+            System.out.println(user.cv.information.getNume() + ": " + "false :" + company + " : " + name + AniExperienta);
             return false;
         }
-        //System.out.println(user.cv.information.getNume() + ": " + "true :" + company + " : " + name);
+        System.out.println(user.cv.information.getNume() + ": " + "true :" + company + " : " + name);
         return true;
     }
 

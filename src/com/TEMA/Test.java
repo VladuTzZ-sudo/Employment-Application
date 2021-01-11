@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -742,6 +743,13 @@ public class Test {
             e.printStackTrace();
         }
 
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            GUIInterface guiInterface = new GUIInterface("Job Finder Software");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         for (User user : aplication.Users) {
             ArrayList<Job> jobs = aplication.getJobs(user.companies);
             for (Job job : jobs) {
@@ -752,15 +760,17 @@ public class Test {
         for (Company company : aplication.getCompanies()) {
             Collections.sort(company.manager.requests, new RequestsComparator());
         }
-
+/*
         for (Company company : aplication.getCompanies()) {
             for (Job job : company.getJobs()){
                 company.manager.process(job);
             }
-        }
+        }*/
 
         System.out.println(aplication.Users);
         System.out.println(aplication.getCompanies());
+
+
 
     }
 }

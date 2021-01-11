@@ -34,7 +34,6 @@ public class Request<K, V> implements Comparable {
     public String toString() {
         return "Request{" +
                 ", value1=" + value1 +
-                ", value2=" + value2 +
                 '}';
     }
 
