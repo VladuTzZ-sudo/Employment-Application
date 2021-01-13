@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.TEMA.GUIInterface">
-  <grid id="21c45" binding="MainPage" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="21c45" binding="MainPage" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="198" y="43" width="687" height="748"/>
@@ -18,7 +18,7 @@
         </constraints>
         <properties>
           <autoscrolls value="false"/>
-          <background color="-14447284"/>
+          <background color="-10842755"/>
           <enabled value="true"/>
           <minimumSize width="70" height="40"/>
         </properties>
@@ -95,6 +95,7 @@
                   <splitpane position="left"/>
                 </constraints>
                 <properties>
+                  <background color="-16777216"/>
                   <text value="Back"/>
                 </properties>
               </component>
@@ -115,11 +116,12 @@
               <grid row="0" column="0" row-span="7" col-span="1" vsize-policy="4" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-16777216"/>
               <horizontalAlignment value="0"/>
               <text value="Back"/>
             </properties>
           </component>
-          <component id="8ef35" class="javax.swing.JButton" binding="ButtonSearchUsers">
+          <component id="8ef35" class="javax.swing.JButton" binding="ButtonSearchUsersProfile">
             <constraints>
               <grid row="0" column="2" row-span="3" col-span="1" vsize-policy="0" hsize-policy="3" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -171,6 +173,90 @@
               <text value="Button"/>
             </properties>
           </component>
+        </children>
+      </grid>
+      <grid id="8f094" binding="UserOrCompany" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="92ded" class="javax.swing.JButton" binding="BackFromUserOrCompany">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="-1" height="50"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-16777216"/>
+              <text value="Back"/>
+            </properties>
+          </component>
+          <splitpane id="75a88" binding="SplitFromUserOrCompany">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="200"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-13498579"/>
+              <foreground color="-13498579"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="d603f" class="javax.swing.JButton" binding="UserChoosed">
+                <constraints>
+                  <splitpane position="left"/>
+                </constraints>
+                <properties>
+                  <background color="-12082554"/>
+                  <text value="Users"/>
+                </properties>
+              </component>
+              <component id="841f" class="javax.swing.JButton" binding="CompaniesChoosed">
+                <constraints>
+                  <splitpane position="right"/>
+                </constraints>
+                <properties>
+                  <background color="-7641722"/>
+                  <text value="Companies"/>
+                </properties>
+              </component>
+            </children>
+          </splitpane>
+        </children>
+      </grid>
+      <grid id="7270c" binding="UserChoosedPage" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="884d6" class="javax.swing.JButton" binding="backfromUserChoosedPage">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="-1" height="50"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-16777216"/>
+              <text value="Back"/>
+            </properties>
+          </component>
+          <splitpane id="a3ef4" binding="SplitUsersAdmin">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="200"/>
+              </grid>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </splitpane>
         </children>
       </grid>
     </children>

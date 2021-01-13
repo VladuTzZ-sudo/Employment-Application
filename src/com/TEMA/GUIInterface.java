@@ -5,9 +5,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 public class GUIInterface extends JFrame {
     private JPanel HomePage;
@@ -17,17 +17,28 @@ public class GUIInterface extends JFrame {
     private JButton managerPageButton;
     private JButton profilePageButton;
     private JButton backButton1;
+    private JPanel LeftCompanyPanel;
+    private JPanel RightComapanyPanel;
+    private JButton BackFromCompanyChoosedPage;
     private JButton backButton2;
     private JPanel MainPage;
     private JPanel APage;
     private JButton backbutton3;
-    private JButton ButtonSearchUsers;
+    private JButton ButtonSearchUsersProfile;
     private JTextField CautareUsers;
     private JPanel TabelPanel;
     private JScrollPane ScrollTabelPanel;
     private JSplitPane ManagerPane;
     private JButton ManagerBackButton;
-    private JButton backButton;
+    private JPanel UserOrCompany;
+    private JButton BackFromUserOrCompany;
+    private JButton UserChoosed;
+    private JButton CompaniesChoosed;
+    private JSplitPane SplitFromUserOrCompany;
+    private JPanel UserChoosedPage;
+    private JButton backfromUserChoosedPage;
+    private JSplitPane SplitUsersAdmin;
+    private JPanel UsersList;
     private String companyName = null;
     private JPanel Requests;
     private JPanel UserRequest;
@@ -38,6 +49,15 @@ public class GUIInterface extends JFrame {
     private JButton CancelButton;
     private boolean resizable = false;
     private JButtonEdited AccesedRequest;
+    private User userfromList;
+    private JPanel UserInfo;
+    private JSplitPane splitPaneCompany;
+    private ArrayList<JButtonCompany> jButtonCompanies = new ArrayList<>();
+    private JTabbedPane jTabbedPaneCompany;
+    private JPanel EmployeesPanel = new JPanel();
+    private JPanel JobsPanel = new JPanel();
+    private JPanel EmployeeInfo = new JPanel();
+    private JScrollPane jScrollPane1;
 
     public GUIInterface(String titlu) {
         super(titlu);
@@ -61,7 +81,8 @@ public class GUIInterface extends JFrame {
         adminPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setContentPane(APage);
+                UserOrCompanyPageCreation();
+                setContentPane(UserOrCompany);
                 setVisible(true);
                 pack();
             }
@@ -110,13 +131,6 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        ButtonSearchUsers.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ButtonSearchAction();
-            }
-        });
-
         CautareUsers.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -143,6 +157,501 @@ public class GUIInterface extends JFrame {
                 pack();
             }
         });
+
+        BackFromUserOrCompany.addActionListener(new ActionListener() {            //dateDespreUtilizatorButton jpanel de alegere adminpage - user-company - de inapoi.
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(HomePage);
+                setVisible(true);
+                pack();
+            }
+        });
+
+        UserChoosed.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserChoosedPageCreation();
+            }
+        });
+
+        CompaniesChoosed.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CompanyChoosedPageCreation();
+            }
+        });
+
+        backfromUserChoosedPage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(UserOrCompany);
+                setVisible(true);
+                pack();
+            }
+        });
+
+        ButtonSearchUsersProfile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ButtonSearchAction();
+            }
+        });
+    }
+
+    public void CompanyChoosedPageCreation() {
+        JSplitPane CompanyChoosedPage = new JSplitPane();
+        CompanyChoosedPage.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        BackFromCompanyChoosedPage = new JButton("Back");
+        BackFromCompanyChoosedPage.setBackground(Color.BLACK);
+        BackFromCompanyChoosedPage.setEnabled(true);
+        BackFromCompanyChoosedPage.setPreferredSize(new Dimension(CompanyChoosedPage.getWidth(), 50));
+        CompanyChoosedPage.setLeftComponent(BackFromCompanyChoosedPage);
+        CompanyChoosedPage.setEnabled(false);
+
+        BackFromCompanyChoosedPage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(UserOrCompany);
+                setVisible(true);
+                pack();
+            }
+        });
+
+        splitPaneCompany = new JSplitPane();
+        splitPaneCompany.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        splitPaneCompany.setResizeWeight(0.15);
+        splitPaneCompany.setEnabled(false);
+        CompanyChoosedPage.setRightComponent(splitPaneCompany);
+        LeftCompanyPanel = new JPanel();
+        RightComapanyPanel = new JPanel();
+        splitPaneCompany.setLeftComponent(LeftCompanyPanel);
+        splitPaneCompany.setRightComponent(RightComapanyPanel);
+
+        LeftCompanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getLeftComponent().getWidth(), splitPaneCompany.getLeftComponent().getHeight()));
+        RightComapanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+
+        JTabbedPane jTabbedPaneCompany = new JTabbedPane();
+        jTabbedPaneCompany.add("Employees", EmployeesPanel);
+        jTabbedPaneCompany.add("Employee Info", EmployeeInfo);
+        jTabbedPaneCompany.add("Jobs", JobsPanel);
+        EmployeesPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        EmployeeInfo.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        JobsPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        LeftCompanyPanel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.gridx = 0;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.NORTH;
+        splitPaneCompany.setRightComponent(jTabbedPaneCompany);
+        int contor = 0;
+        Application application = Application.getInstance();
+
+        for (Company company : application.Companies) {
+            JButtonCompany jButtonCompany = new JButtonCompany(company, company.name);
+            jButtonCompanies.add(jButtonCompany);
+            JButton jButton = jButtonCompany.jButton;
+            jButton.setPreferredSize(new Dimension(splitPaneCompany.getLeftComponent().getWidth(), 50));
+            jButton.setBackground(Color.YELLOW);
+            constraints.gridy = contor;
+            contor++;
+            LeftCompanyPanel.add(jButton, constraints);
+
+            jButtonCompany.jButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JPanel jPanel = new JPanel();
+                    jPanel.setPreferredSize(new Dimension(LeftCompanyPanel.getPreferredSize()));
+                    jPanel.setLayout(new GridBagLayout());
+                    splitPaneCompany.setLeftComponent(jPanel);
+                    GridBagConstraints constraints1 = new GridBagConstraints();
+                    constraints1.gridy = 0;
+                    constraints1.gridx = 0;
+                    constraints1.weighty = 0;
+                    constraints1.weightx = 0;
+                    constraints1.fill = GridBagConstraints.HORIZONTAL;
+                    constraints1.anchor = GridBagConstraints.NORTH;
+                    int contor1 = 0;
+                    for (Company company1 : application.Companies) {
+                        JButtonCompany jButton11 = new JButtonCompany(company1, company1.name);
+                        JButton jButton1 = jButton11.jButton;
+                        jButton1.setPreferredSize(new Dimension(jPanel.getWidth(), 50));
+                        jButton1.setBackground(Color.YELLOW);
+                        constraints1.gridy = contor1;
+                        contor1++;
+                        jPanel.add(jButton1, constraints1);
+
+                        if (company1.name.compareTo(jButtonCompany.company.name) == 0) {
+                            jButton1.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    splitPaneCompany.setLeftComponent(LeftCompanyPanel);
+                                    splitPaneCompany.setVisible(true);
+                                    pack();
+                                }
+                            });
+
+                            for (Departament departament : jButtonCompany.company.departaments) {
+                                JButtonDepartment jButtonDepartment = new JButtonDepartment(departament, departament.getType());
+                                JButton jButton2 = jButtonDepartment.jButton;
+                                jButton2.setPreferredSize(new Dimension(jPanel.getWidth(), 25));
+                                jButton2.setBackground(Color.BLUE);
+
+                                jButton2.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        EmployeesPanel.setLayout(new GridBagLayout());
+                                        EmployeesPanel.removeAll();
+                                        GridBagConstraints bagConstraints = new GridBagConstraints();
+                                        bagConstraints.gridy = 0;
+                                        bagConstraints.gridx = 0;
+                                        bagConstraints.weightx = 0;
+                                        bagConstraints.weighty = 0;
+                                        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+                                        bagConstraints.anchor = GridBagConstraints.NORTH;
+
+                                        int contorEmployees = 0;
+                                        for (Employee employee : jButtonDepartment.departament.getEmployees()) {
+                                            JButton employeeData = new JButton(employee.cv.information.getNume() + " " + employee.cv.information.getPrenume());
+                                            employeeData.setEnabled(true);
+                                            employeeData.setPreferredSize(new Dimension(EmployeesPanel.getWidth(), 50));
+                                            employeeData.setForeground(Color.BLACK);
+                                            employeeData.setBackground(Color.CYAN);
+                                            bagConstraints.gridy = contorEmployees;
+                                            contorEmployees++;
+                                            EmployeesPanel.add(employeeData, bagConstraints);
+                                        }
+
+                                        bagConstraints.weightx = 1;
+                                        bagConstraints.weighty = 1;
+                                        bagConstraints.gridy = contorEmployees;
+                                        EmployeesPanel.add(new JLabel(""), bagConstraints);
+                                        EmployeesPanel.setVisible(true);
+                                        jTabbedPaneCompany.setSelectedIndex(1);
+                                        jTabbedPaneCompany.setSelectedIndex(0);
+                                        pack();
+                                    }
+                                });
+
+                                constraints1.gridy = contor1;
+                                contor1++;
+                                jPanel.add(jButton2, constraints1);
+                            }
+                        } else {
+                            jButton1.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    splitPaneCompany.setLeftComponent(LeftCompanyPanel);
+
+                                    for (JButtonCompany jButtonCompany1 : jButtonCompanies) {
+                                        if (jButtonCompany1.company.name.compareTo(jButton11.company.name) == 0) {
+                                            jButtonCompany1.jButton.doClick();
+                                        }
+                                    }
+
+                                    splitPaneCompany.setVisible(true);
+                                    pack();
+                                }
+                            });
+                        }
+                    }
+                    constraints1.weightx = 1;
+                    constraints1.weighty = 1;
+                    constraints1.gridy = contor1;
+                    jPanel.add(new JLabel(" "), constraints1);
+                    jPanel.setVisible(true);
+                    pack();
+                }
+            });
+        }
+
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.gridy = contor;
+        LeftCompanyPanel.add(new JLabel(" "), constraints);
+
+        setContentPane(CompanyChoosedPage);
+        setVisible(true);
+        pack();
+    }
+
+    public void UserChoosedPageCreation() {
+        SplitUsersAdmin.setResizeWeight(0.15);
+        SplitUsersAdmin.setEnabled(false);
+
+        UsersList = new JPanel();
+        //UsersList.setPreferredSize(SplitUsersAdmin.getLeftComponent().getPreferredSize());
+        UsersList.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+
+        UserInfo = new JPanel();
+        //UserInfo.setPreferredSize(SplitUsersAdmin.getRightComponent().getPreferredSize());
+        UserInfo.setLayout(new GridBagLayout());
+        GridBagConstraints constraints1 = new GridBagConstraints();
+        constraints1.gridx = 0;
+        constraints1.fill = GridBagConstraints.HORIZONTAL;
+        constraints1.weightx = 0;
+        constraints1.weighty = 0;
+
+        JButton UserInfoButton = new JButton("User Info");
+        UserInfoButton.setBackground(Color.BLUE);
+        UserInfoButton.setPreferredSize(new Dimension(UserInfo.getWidth(), 20));
+        UserInfo.add(UserInfoButton, constraints1);
+
+        constraints1.gridy = 1;
+        constraints1.weighty = 1;
+        constraints1.weightx = 1;
+        UserInfo.add(new JLabel(" "), constraints1);
+        UserInfo = new JPanel();
+        SplitUsersAdmin.setRightComponent(UserInfo);
+        UserInfo.setVisible(true);
+        pack();
+
+        JButton ChooseUser = new JButton("Choose an user");
+        ChooseUser.setBackground(Color.BLUE);
+        ChooseUser.setPreferredSize(new Dimension(UsersList.getWidth(), 20));
+        UsersList.add(ChooseUser, constraints);
+
+        jScrollPane1 = new JScrollPane(UserInfo);
+        jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        SplitUsersAdmin.setRightComponent(jScrollPane1);
+
+        int contor = 1;
+        Application application = Application.getInstance();
+        for (User user : application.Users) {
+            JButton jButton = new JButton(user.cv.information.getNume() + " " + user.cv.information.getPrenume());
+            jButton.setBackground(Color.GREEN);
+            jButton.setPreferredSize(new Dimension(UsersList.getWidth(), 40));
+
+            jButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    userfromList = user;
+                    UserInfo.removeAll();
+                    //UserInfo.setPreferredSize(SplitUsersAdmin.getRightComponent().getPreferredSize());
+                    UserInfo.setLayout(new GridBagLayout());
+                    GridBagConstraints constraints = new GridBagConstraints();
+                    constraints.gridx = 0;
+                    constraints.fill = GridBagConstraints.HORIZONTAL;
+                    constraints.weightx = 0;
+                    constraints.weighty = 0;
+
+                    int contor = 0;
+                    JButton UserInfoButton = new JButton("User Info");
+                    UserInfoButton.setBackground(Color.BLUE);
+                    UserInfoButton.setPreferredSize(new Dimension(UserInfo.getWidth(), 20));
+                    UserInfo.add(UserInfoButton, constraints);
+                    contor++;
+
+                    JButton nume = new JButton(user.cv.information.getNume() + " " + user.cv.information.getPrenume());
+                    nume.setEnabled(true);
+                    nume.setPreferredSize(new Dimension(UserInfo.getWidth(), 50));
+                    nume.setForeground(Color.BLACK);
+                    nume.setBackground(Color.GREEN);
+                    UserInfo.add(nume, constraints);
+                    contor++;
+
+                    JButton information = new JButton("Information");
+                    information.setEnabled(true);
+                    information.setPreferredSize(new Dimension(UserInfo.getWidth(), 50));
+                    information.setForeground(Color.BLACK);
+                    information.setBackground(Color.YELLOW);
+                    constraints.gridy = contor;
+                    contor++;
+                    UserInfo.add(information, constraints);
+
+                    String[][] data = {{"Nume", user.cv.information.getNume()},
+                            {"Prenume", user.cv.information.getPrenume()},
+                            {"Sex", user.cv.information.getSex()},
+                            {"Data de nastere", user.cv.information.getData_de_nastere()},
+                            {"Telefon", user.cv.information.getTelefon()},
+                            {"Email", user.cv.information.getEmail()}};
+
+                    String[] column = new String[]{"About", "Date"};
+                    JTable jTable = new JTable(data, column);
+                    jTable.setSize(new Dimension(UserInfo.getWidth(), 50));
+                    jTable.setEnabled(false);
+                    constraints.gridy = contor;
+                    contor++;
+                    jTable.getColumnModel().getColumn(0).setPreferredWidth(UserInfo.getWidth() / 2);
+                    jTable.getColumnModel().getColumn(1).setPreferredWidth(UserInfo.getWidth() / 2);
+                    jTable.setFillsViewportHeight(false);
+                    JScrollPane jScrollPane = new JScrollPane(jTable);
+                    jScrollPane.setPreferredSize(new Dimension(UserInfo.getWidth(), (7) * jTable.getRowHeight()));
+                    if (jScrollPane.isWheelScrollingEnabled()) {
+                        jScrollPane.setPreferredSize(new Dimension(UserInfo.getWidth(), (7) * jTable.getRowHeight() + 11));
+                    }
+                    UserInfo.add(jScrollPane, constraints);
+
+                    JButton limbi = new JButton("Limbi");
+                    limbi.setEnabled(true);
+                    limbi.setPreferredSize(new Dimension(UserInfo.getWidth(), 50));
+                    limbi.setForeground(Color.BLACK);
+                    limbi.setBackground(Color.DARK_GRAY);
+                    constraints.gridy = contor;
+                    contor++;
+                    UserInfo.add(limbi, constraints);
+
+                    String[] column2 = new String[]{"Limba", "Nivel"};
+                    String[][] data2 = new String[user.cv.information.getLanguages().size()][2];
+                    int i = 0;
+                    for (Limbi language : user.cv.information.getLanguages()) {
+                        data2[i][0] = language.getLimba();
+                        data2[i][1] = language.getLevel();
+                        i++;
+                    }
+                    JTable jTable2 = new JTable(data2, column2);
+                    jTable2.setSize(new Dimension(UserInfo.getWidth(), 50));
+                    jTable2.setEnabled(false);
+                    constraints.gridy = contor;
+                    contor++;
+                    jTable2.getColumnModel().getColumn(0).setPreferredWidth(UserInfo.getWidth() / 2);
+                    jTable2.getColumnModel().getColumn(1).setPreferredWidth(UserInfo.getWidth() / 2);
+                    jTable2.setFillsViewportHeight(false);
+                    JScrollPane jScrollPane2 = new JScrollPane(jTable2);
+                    jScrollPane2.setPreferredSize(new Dimension(UserInfo.getWidth(), (user.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight()));
+                    if (jScrollPane2.isWheelScrollingEnabled()) {
+                        jScrollPane2.setPreferredSize(new Dimension(UserInfo.getWidth(), (user.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight() + 11));
+                    }
+                    UserInfo.add(jScrollPane2, constraints);
+
+                    JButton Educations = new JButton("Educations");
+                    Educations.setEnabled(true);
+                    Educations.setPreferredSize(new Dimension(UserInfo.getWidth(), 50));
+                    Educations.setForeground(Color.BLACK);
+                    Educations.setBackground(Color.BLUE);
+                    constraints.gridy = contor;
+                    contor++;
+                    UserInfo.add(Educations, constraints);
+
+                    for (Education education : user.cv.educations) {
+                        JButton buttons = new JButton();
+                        if (education.end != null) {
+                            buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                    education.end.get(Calendar.DATE) + "." + education.end.get(Calendar.MONTH) + "." + education.end.get(Calendar.YEAR));
+                        } else {
+                            buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                    "now");
+                        }
+                        buttons.setEnabled(true);
+                        buttons.setPreferredSize(new Dimension(UserInfo.getWidth(), 25));
+                        buttons.setForeground(Color.BLACK);
+                        buttons.setBackground(Color.RED);
+                        constraints.gridy = contor;
+                        contor++;
+                        UserInfo.add(buttons, constraints);
+
+                        String[][] data3 = {{"Level", education.level},
+                                {"Institutie", education.institutie},
+                                {"Medie", education.medie.toString()}};
+
+                        JTable jTable3 = new JTable(data3, column);
+                        jTable3.setEnabled(false);
+                        jTable3.setSize(new Dimension(UserInfo.getWidth(), 50));
+                        constraints.gridy = contor;
+                        contor++;
+                        jTable3.getColumnModel().getColumn(0).setPreferredWidth(UserInfo.getWidth() / 2);
+                        jTable3.getColumnModel().getColumn(1).setPreferredWidth(UserInfo.getWidth() / 2);
+                        jTable3.setFillsViewportHeight(false);
+                        JScrollPane jScrollPane3 = new JScrollPane(jTable3);
+                        jScrollPane3.setPreferredSize(new Dimension(UserInfo.getWidth(), (4 * jTable3.getRowHeight())));
+                        if (jScrollPane3.isWheelScrollingEnabled()) {
+                            jScrollPane3.setPreferredSize(new Dimension(UserInfo.getWidth(), (4 * jTable3.getRowHeight() + 11)));
+                        }
+                        UserInfo.add(jScrollPane3, constraints);
+                    }
+
+                    JButton Experiences = new JButton("Experiences");
+                    Experiences.setEnabled(true);
+                    Experiences.setPreferredSize(new Dimension(UserInfo.getWidth(), 50));
+                    Experiences.setForeground(Color.BLACK);
+                    Experiences.setBackground(Color.BLUE);
+                    constraints.gridy = contor;
+                    contor++;
+                    UserInfo.add(Experiences, constraints);
+
+                    for (Experience experience : user.cv.experiences) {
+                        JButton buttonsExperience = new JButton();
+                        if (experience.end != null) {
+                            buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                    experience.end.get(Calendar.DATE) + "." + experience.end.get(Calendar.MONTH) + "." + experience.end.get(Calendar.YEAR));
+                        } else {
+                            buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                    "now");
+                        }
+                        buttonsExperience.setEnabled(true);
+                        buttonsExperience.setPreferredSize(new Dimension(UserInfo.getWidth(), 25));
+                        buttonsExperience.setForeground(Color.BLACK);
+                        buttonsExperience.setBackground(Color.RED);
+                        constraints.gridy = contor;
+                        contor++;
+                        UserInfo.add(buttonsExperience, constraints);
+
+                        String[][] data4 = {{"Company", experience.company},
+                                {"Departament", experience.department},
+                                {"Pozitie", experience.pozitie}};
+
+                        JTable jTable4 = new JTable(data4, column);
+                        jTable4.setSize(new Dimension(UserInfo.getWidth(), 50));
+                        constraints.gridy = contor;
+                        contor++;
+                        jTable4.getColumnModel().getColumn(0).setPreferredWidth(UserInfo.getWidth() / 2);
+                        jTable4.getColumnModel().getColumn(1).setPreferredWidth(UserInfo.getWidth() / 2);
+                        jTable4.setFillsViewportHeight(false);
+                        jTable4.setEnabled(false);
+                        JScrollPane jScrollPane4 = new JScrollPane(jTable4);
+                        jScrollPane4.setPreferredSize(new Dimension(UserInfo.getWidth(), (4 * jTable4.getRowHeight())));
+                        if (jScrollPane4.isWheelScrollingEnabled()) {
+                            jScrollPane4.setPreferredSize(new Dimension(UserInfo.getWidth(), (4 * jTable4.getRowHeight() + 11)));
+                        }
+                        UserInfo.add(jScrollPane4, constraints);
+                    }
+
+                    constraints.gridy = contor;
+                    constraints.weighty = 1;
+                    constraints.weightx = 1;
+                    UserInfo.add(new JLabel(" "), constraints);
+
+                    //jScrollPane1 = new JScrollPane(UserInfo);
+                    //jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                    //jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                    //SplitUsersAdmin.setRightComponent(jScrollPane1);
+                    UserInfo.setVisible(true);
+                    setVisible(true);
+                    pack();
+                }
+            });
+
+            constraints.gridy = contor;
+            UsersList.add(jButton, constraints);
+            contor++;
+        }
+
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.gridy = contor;
+        UsersList.add(new JLabel(" "), constraints);
+        SplitUsersAdmin.setLeftComponent(UsersList);
+        UsersList.setVisible(true);
+        setContentPane(UserChoosedPage);
+        setVisible(true);
+        pack();
+    }
+
+    public void UserOrCompanyPageCreation() {
+        SplitFromUserOrCompany.setResizeWeight(0.52);
+        SplitFromUserOrCompany.setEnabled(false);
+    }
+
+    public void AdminPageCreation() {
+
     }
 
     public void ManagerPageCreation() {
@@ -669,7 +1178,7 @@ public class GUIInterface extends JFrame {
                         data1 = new String[][]{{"An minim", "null"},
                                 {"An maxim", String.valueOf(Double.valueOf(request.getKey().anAbsolvire.superior).longValue())}};
                     }
-                    if (request.getKey().anAbsolvire.superior == 3000){
+                    if (request.getKey().anAbsolvire.superior == 3000) {
                         data1 = new String[][]{{"An minim", String.valueOf(Double.valueOf(request.getKey().anAbsolvire.inferior).longValue())},
                                 {"An maxim", "null"}};
                     }
@@ -706,7 +1215,7 @@ public class GUIInterface extends JFrame {
                         data5 = new String[][]{{"Experienta minima", "null"},
                                 {"Experienta maxima", String.valueOf(Double.valueOf(request.getKey().aniExperienta.superior).longValue())}};
                     }
-                    if (request.getKey().aniExperienta.superior == 3000){
+                    if (request.getKey().aniExperienta.superior == 3000) {
                         data5 = new String[][]{{"Experienta minima", String.valueOf(Double.valueOf(request.getKey().aniExperienta.inferior).longValue())},
                                 {"Experienta maxima", "null"}};
                     }
@@ -743,7 +1252,7 @@ public class GUIInterface extends JFrame {
                         data6 = new String[][]{{"Medie minima", "null"},
                                 {"Medie maxima", String.valueOf(Double.valueOf(request.getKey().medieAcademica.superior).longValue())}};
                     }
-                    if (request.getKey().medieAcademica.superior == 3000){
+                    if (request.getKey().medieAcademica.superior == 3000) {
                         data6 = new String[][]{{"Medie minima", String.valueOf(Double.valueOf(request.getKey().medieAcademica.inferior).longValue())},
                                 {"Medie maxima", "null"}};
                     }
@@ -803,72 +1312,11 @@ public class GUIInterface extends JFrame {
         pack();
     }
 
-    /*
     public void ButtonSearchAction() {
         String name1 = CautareUsers.getText();
         String[] parts = name1.split(" ");
         System.out.println(name1);
-        Application application = Application.getInstance();
-        boolean gasit = false;
-        TabelPanel.removeAll();
-        for (User user : application.Users) {
-            if (name1.compareTo(user.cv.information.getNume() + " " + user.cv.information.getPrenume()) == 0 ||
-                    name1.compareTo(user.cv.information.getPrenume() + " " + user.cv.information.getNume()) == 0) {
-                gasit = true;
-                System.out.println(user);
-                break;
-            }
-            for (String name : parts) {
-                if (user.cv.information.getNume().compareTo(name) == 0 || user.cv.information.getPrenume().compareTo(name) == 0) {
-                    System.out.println(user);
-                    JButton nume = new JButton(user.cv.information.getNume() + " " + user.cv.information.getPrenume());
-                    nume.setEnabled(true);
-                    nume.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-                    nume.setForeground(Color.BLACK);
-                    nume.setBackground(Color.GREEN);
 
-                    BoxLayout boxLayout = new BoxLayout(TabelPanel, BoxLayout.Y_AXIS);
-                    TabelPanel.setLayout(boxLayout);
-                    TabelPanel.add(nume, BorderLayout.CENTER);
-
-                    JButton information = new JButton("Information");
-                    information.setEnabled(true);
-                    information.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-                    information.setForeground(Color.BLACK);
-                    information.setBackground(Color.YELLOW);
-                    TabelPanel.add(information, BorderLayout.CENTER);
-
-                    String data[][] = {{"Nume", user.cv.information.getNume()},
-                            {"Prenume", user.cv.information.getPrenume()},
-                            {"Sex", user.cv.information.getSex()},
-                            {"Data de nastere", user.cv.information.getData_de_nastere()},
-                            {"Telefon", user.cv.information.getTelefon()},
-                            {"Email", user.cv.information.getEmail()}};
-
-                    String column[] = new String[]{"About", "Date"};
-                    JTable jTable = new JTable(data, column);
-                    jTable.setSize(new Dimension(Integer.MAX_VALUE,50));
-
-
-
-                    TabelPanel.add(new JScrollPane(jTable), BorderLayout.CENTER);
-
-                    TabelPanel.setVisible(true);
-                    pack();
-                    gasit = true;
-                    break;
-                }
-            }
-        }
-        if (!gasit) {
-            System.out.println("User-ul cu numele: " + name1 + " nu exista!");
-        }
-    }
-    */
-    public void ButtonSearchAction() {
-        String name1 = CautareUsers.getText();
-        String[] parts = name1.split(" ");
-        System.out.println(name1);
         Application application = Application.getInstance();
         boolean gasit = false;
         if (!resizable) {
@@ -877,9 +1325,8 @@ public class GUIInterface extends JFrame {
             resizable = true;
         }
         TabelPanel.removeAll();
-        JobRequest.removeAll();
-        UserRequest.removeAll();
-        Requests.removeAll();
+        TabelPanel.setVisible(true);
+        pack();
         int contor = 0;
         for (User user : application.Users) {
             if (name1.compareTo(user.cv.information.getNume() + " " + user.cv.information.getPrenume()) == 0 ||
@@ -935,7 +1382,10 @@ public class GUIInterface extends JFrame {
                     jTable.getColumnModel().getColumn(1).setPreferredWidth(TabelPanel.getWidth() / 2);
                     jTable.setFillsViewportHeight(false);
                     JScrollPane jScrollPane = new JScrollPane(jTable);
-                    jScrollPane.setPreferredSize(new Dimension(TabelPanel.getWidth(), 6 * 21));
+                    jScrollPane.setPreferredSize(new Dimension(TabelPanel.getWidth(), (7) * jTable.getRowHeight()));
+                    if (jScrollPane.isWheelScrollingEnabled()) {
+                        jScrollPane.setPreferredSize(new Dimension(TabelPanel.getWidth(), (7) * jTable.getRowHeight() + 11));
+                    }
                     TabelPanel.add(jScrollPane, constraints);
 
                     JButton limbi = new JButton("Limbi");
@@ -1085,6 +1535,26 @@ class JButtonEdited extends JButton {
 
     public JButtonEdited(Request<Job, Consumer> request, String name) {
         this.request = request;
+        jButton = new JButton(name);
+    }
+}
+
+class JButtonCompany extends JButton {
+    JButton jButton;
+    Company company;
+
+    public JButtonCompany(Company company, String name) {
+        this.company = company;
+        jButton = new JButton(name);
+    }
+}
+
+class JButtonDepartment extends JButton {
+    JButton jButton;
+    Departament departament;
+
+    public JButtonDepartment(Departament departament, String name) {
+        this.departament = departament;
         jButton = new JButton(name);
     }
 }
