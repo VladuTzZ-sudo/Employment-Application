@@ -3,10 +3,14 @@ package com.TEMA;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TreeSet;
 
 public class GUIInterface extends JFrame {
     private JPanel HomePage;
@@ -52,6 +56,8 @@ public class GUIInterface extends JFrame {
     private JPanel EmployeesPanel = new JPanel();
     private JPanel JobsPanel = new JPanel();
     private JPanel EmployeeInfo = new JPanel();
+    private JPanel newEmployee = new JPanel();
+    private JScrollPane newEmployeeScroll = new JScrollPane(newEmployee);
     private JScrollPane EmployeesScroll = new JScrollPane(EmployeesPanel);
     private JScrollPane JobsScroll = new JScrollPane(JobsPanel);
     private JScrollPane EmplScroll = new JScrollPane(EmployeeInfo);
@@ -62,6 +68,12 @@ public class GUIInterface extends JFrame {
     private JTextField Text2AdminMove;
     private JButton ButtonAdminMove;
     private Employee SelectedEmployee;
+    private JSplitPane SplitSalaryAdmin;
+    private JPanel SalaryPanelAdmin;
+    private JTextField SalaryText;
+    private JButton SalaryCalculate;
+    private Departament departamentSelected;
+    private JButtonDepartment jButtonDepartmentForAddEmployee;
 
     public GUIInterface(String titlu) {
         super(titlu);
@@ -244,12 +256,16 @@ public class GUIInterface extends JFrame {
         EmployeesPanel.removeAll();
         EmployeeInfo.removeAll();
         JobsPanel.removeAll();
+        newEmployee.removeAll();
         jTabbedPaneCompany.add("Employees", EmployeesScroll);
         jTabbedPaneCompany.add("Employee Info", EmplScroll);
         jTabbedPaneCompany.add("Jobs", JobsScroll);
+        jTabbedPaneCompany.add("Add Employee", newEmployeeScroll);
+        newEmployee.setVisible(false);
         EmployeesScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         EmplScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         JobsScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        newEmployeeScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         LeftCompanyPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0;
@@ -290,7 +306,7 @@ public class GUIInterface extends JFrame {
         TextAdminMove.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ( TextAdminMove.isEnabled()) {
+                if (TextAdminMove.isEnabled()) {
                     TextAdminMove.setText("");
                 }
                 super.mouseClicked(e);
@@ -298,7 +314,7 @@ public class GUIInterface extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if ( TextAdminMove.isEnabled()) {
+                if (TextAdminMove.isEnabled()) {
                     TextAdminMove.setText("");
                 }
                 super.mousePressed(e);
@@ -308,7 +324,7 @@ public class GUIInterface extends JFrame {
         Text2AdminMove.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ( Text2AdminMove.isEnabled()) {
+                if (Text2AdminMove.isEnabled()) {
                     Text2AdminMove.setText("");
                 }
                 super.mouseClicked(e);
@@ -316,7 +332,7 @@ public class GUIInterface extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if ( Text2AdminMove.isEnabled()) {
+                if (Text2AdminMove.isEnabled()) {
                     Text2AdminMove.setText("");
                 }
                 super.mousePressed(e);
@@ -332,21 +348,17 @@ public class GUIInterface extends JFrame {
 
                     Application application = Application.getInstance();
                     if (application.getCompany(companySelected) != null) {
-                        Company company = application.getCompany(companySelected);
-                        for(Departament departament : company.departaments){
-                            if ( departament.getType().compareTo(departmentSelected) == 0){
-                                if ( company.contains(SelectedEmployee)) {
-                                    company.move(SelectedEmployee, departament);
-                                }else {
-                                    company.add(SelectedEmployee, departament);
-                                    application.getCompany(SelectedEmployee.company).remove(SelectedEmployee);
-                                }
+                        Company company6 = application.getCompany(companySelected);
+                        for (Departament departament : company6.departaments) {
+                            if (departament.getType().compareTo(departmentSelected) == 0) {
+                                application.getCompany(SelectedEmployee.company).remove(SelectedEmployee);
+                                company6.add(SelectedEmployee, departament);
+                                SelectedEmployee.company = companySelected;
                                 CompanyChoosedPageCreation();
                                 setVisible(true);
                                 pack();
                             }
                         }
-
                     }
                 }
             }
@@ -355,8 +367,36 @@ public class GUIInterface extends JFrame {
         SplitAdminMove.setLeftComponent(AdminMove);
         SplitAdminMove.setOrientation(JSplitPane.VERTICAL_SPLIT);
         SplitAdminMove.setEnabled(false);
+
+        SplitSalaryAdmin = new JSplitPane();
+        SplitSalaryAdmin.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        SplitSalaryAdmin.setEnabled(false);
+        SplitSalaryAdmin.setRightComponent(SplitAdminMove);
+
+        SalaryPanelAdmin = new JPanel();
+        SalaryPanelAdmin.setLayout(new GridLayout());
+
+        SalaryText = new JTextField("The salary budget of the department is...");
+        SalaryText.setEditable(false);
+        SalaryText.setFocusable(false);
+
+        SalaryCalculate = new JButton("Calculate");
+        SalaryCalculate.setEnabled(false);
+        SalaryCalculate.setFocusable(false);
+
+        SalaryCalculate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SalaryText.setText(String.valueOf(departamentSelected.getTotalSalaryBudget()));
+            }
+        });
+
+        SalaryPanelAdmin.add(SalaryText);
+        SalaryPanelAdmin.add(SalaryCalculate);
+
+        SplitSalaryAdmin.setLeftComponent(SalaryPanelAdmin);
         SplitAdminMove.setRightComponent(jTabbedPaneCompany);
-        splitPaneCompany.setRightComponent(SplitAdminMove);
+        splitPaneCompany.setRightComponent(SplitSalaryAdmin);
 
         int contor = 0;
         JButton Alege = new JButton("Choose a company");
@@ -384,6 +424,8 @@ public class GUIInterface extends JFrame {
                     JPanel jPanel = new JPanel();
                     jPanel.setPreferredSize(new Dimension(LeftCompanyPanel.getPreferredSize()));
                     jPanel.setLayout(new GridBagLayout());
+                    SalaryCalculate.setEnabled(false);
+                    SalaryText.setText("The salary budget of the department is...");
                     splitPaneCompany.setLeftComponent(jPanel);
                     GridBagConstraints constraints1 = new GridBagConstraints();
                     constraints1.gridy = 0;
@@ -418,11 +460,17 @@ public class GUIInterface extends JFrame {
                                     JButton Alege = new JButton("Choose a company");
                                     Alege.setPreferredSize(new Dimension(LeftCompanyPanel.getWidth(), 25));
                                     Alege.setBackground(Color.BLACK);
+                                    SalaryCalculate.setEnabled(false);
+                                    SalaryText.setText("The salary budget of the department is...");
                                     constraints.gridy = 0;
                                     constraints.weighty = 0;
                                     constraints.weightx = 0;
                                     LeftCompanyPanel.add(Alege, constraints);
 
+                                    EmployeeInfo.removeAll();
+                                    EmployeesPanel.removeAll();
+                                    JobsPanel.removeAll();
+                                    newEmployee.removeAll();
                                     LeftCompanyPanel.setVisible(true);
                                     splitPaneCompany.setVisible(true);
                                     pack();
@@ -435,12 +483,16 @@ public class GUIInterface extends JFrame {
                                 jButton2.setPreferredSize(new Dimension(jPanel.getWidth(), 25));
                                 jButton2.setFocusable(false);
                                 jButton2.setBackground(Color.BLUE);
-
+                                SalaryCalculate.setEnabled(false);
                                 jButton2.addActionListener(new ActionListener() {
                                     @Override
                                     public void actionPerformed(ActionEvent e) {
                                         EmployeesPanel.setLayout(new GridBagLayout());
                                         EmployeesPanel.removeAll();
+                                        newEmployee.removeAll();
+                                        SalaryCalculate.setEnabled(true);
+                                        departamentSelected = departament;
+                                        jButtonDepartmentForAddEmployee = jButtonDepartment;
                                         GridBagConstraints bagConstraints = new GridBagConstraints();
                                         bagConstraints.gridy = 0;
                                         bagConstraints.gridx = 0;
@@ -461,6 +513,7 @@ public class GUIInterface extends JFrame {
                                             JButton employeeData = new JButton(employee.cv.information.getNume() + " " + employee.cv.information.getPrenume());
                                             employeeData.setEnabled(true);
                                             employeeData.setFocusable(false);
+                                            SalaryCalculate.setEnabled(true);
                                             employeeData.setPreferredSize(new Dimension(EmployeesPanel.getWidth(), 50));
                                             employeeData.setForeground(Color.BLACK);
 
@@ -863,6 +916,548 @@ public class GUIInterface extends JFrame {
                                             EmployeesPanel.add(employeeData, bagConstraints);
                                         }
 
+                                        newEmployee.setLayout(new GridBagLayout());
+                                        GridBagConstraints newConstraint = new GridBagConstraints();
+                                        newConstraint.gridy = 0;
+                                        newConstraint.gridx = 0;
+                                        newConstraint.weightx = 0;
+                                        newConstraint.weighty = 0;
+                                        newConstraint.anchor = GridBagConstraints.NORTH;
+                                        newConstraint.fill = GridBagConstraints.HORIZONTAL;
+                                        int newContor = 0;
+
+                                        JButton Adauga = new JButton("Add employee");
+                                        Adauga.setEnabled(false);
+                                        Adauga.setFocusable(false);
+                                        Adauga.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(Adauga, newConstraint);
+
+                                        JButton companyName = new JButton(company1.name);
+                                        companyName.setEnabled(true);
+                                        companyName.setFocusable(false);
+                                        companyName.setBackground(Color.BLACK);
+                                        companyName.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(companyName, newConstraint);
+
+                                        JButton departmentName = new JButton(jButtonDepartment.departament.getType());
+                                        departmentName.setEnabled(true);
+                                        departmentName.setFocusable(false);
+                                        departmentName.setBackground(Color.BLACK);
+                                        departmentName.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(departmentName, newConstraint);
+
+                                        JButton addSalary = new JButton("Add Salary");
+                                        addSalary.setEnabled(false);
+                                        addSalary.setFocusable(false);
+                                        addSalary.setBackground(Color.BLACK);
+                                        addSalary.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(addSalary, newConstraint);
+
+                                        JTextField salaryInput = new JTextField("*required*");
+                                        salaryInput.setEditable(true);
+                                        salaryInput.setEnabled(true);
+                                        salaryInput.setHorizontalAlignment(SwingConstants.CENTER);
+                                        salaryInput.setFocusable(true);
+                                        salaryInput.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(salaryInput, newConstraint);
+
+                                        salaryInput.addMouseListener(new MouseAdapter() {
+                                            @Override
+                                            public void mouseClicked(MouseEvent e) {
+                                                salaryInput.setText("");
+                                                super.mouseClicked(e);
+                                            }
+
+                                            @Override
+                                            public void mousePressed(MouseEvent e) {
+                                                salaryInput.setText("");
+                                                super.mousePressed(e);
+                                            }
+                                        });
+
+                                        JButton information = new JButton("Add Information");
+                                        information.setEnabled(false);
+                                        information.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        information.setForeground(Color.BLACK);
+                                        information.setBackground(Color.YELLOW);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(information, newConstraint);
+
+                                        String[][] data = {{"Nume", "*required*"},
+                                                {"Prenume", "*required*"},
+                                                {"Sex", "*required*"},
+                                                {"Data de nastere", "*required*"},
+                                                {"Telefon", "*required*"},
+                                                {"Email", "*required*"}};
+
+                                        String[] column = new String[]{"About", "Date - press enter to commit"};
+                                        JTable jTable = new JTable(data, column);
+                                        jTable.setEnabled(true);
+                                        jTable.setFocusable(false);
+                                        jTable.setSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        jTable.getColumnModel().getColumn(0).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable.getColumnModel().getColumn(1).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable.setFillsViewportHeight(false);
+                                        JScrollPane jScrollPane = new JScrollPane(jTable);
+                                        jScrollPane.setPreferredSize(new Dimension(newEmployee.getWidth(), (7) * jTable.getRowHeight()));
+                                        if (jScrollPane.isWheelScrollingEnabled()) {
+                                            jScrollPane.setPreferredSize(new Dimension(newEmployee.getWidth(), (7) * jTable.getRowHeight() + 11));
+                                        }
+                                        newEmployee.add(jScrollPane, newConstraint);
+
+                                        JButton limbi = new JButton("Add Languages");
+                                        limbi.setEnabled(false);
+                                        limbi.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        limbi.setForeground(Color.BLACK);
+                                        limbi.setBackground(Color.ORANGE);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(limbi, newConstraint);
+
+                                        String[][] data4 = {{"Limba", "*required*"},
+                                                {"Nivel", "*required*"}};
+
+                                        JTable jTable4 = new JTable(data4, column);
+                                        jTable4.setEnabled(true);
+                                        jTable4.setFocusable(false);
+                                        jTable4.setSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        jTable4.getColumnModel().getColumn(0).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable4.getColumnModel().getColumn(1).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable4.setFillsViewportHeight(false);
+                                        JScrollPane jScrollPane4 = new JScrollPane(jTable4);
+                                        jScrollPane4.setPreferredSize(new Dimension(newEmployee.getWidth(), (3) * jTable4.getRowHeight()));
+                                        if (jScrollPane4.isWheelScrollingEnabled()) {
+                                            jScrollPane4.setPreferredSize(new Dimension(newEmployee.getWidth(), (3) * jTable4.getRowHeight() + 11));
+                                        }
+                                        newEmployee.add(jScrollPane4, newConstraint);
+
+                                        JButton addlimba = new JButton("Click to add Language");
+                                        addlimba.setEnabled(false);
+                                        addlimba.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        addlimba.setForeground(Color.BLACK);
+                                        addlimba.setBackground(Color.ORANGE);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(addlimba, newConstraint);
+
+                                        JButton educations = new JButton("Add Educations");
+                                        educations.setEnabled(false);
+                                        educations.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        educations.setForeground(Color.BLACK);
+                                        educations.setBackground(Color.RED);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(educations, newConstraint);
+
+                                        String[][] data2 = {{"level", "*required*"},
+                                                {"name", "*required*"},
+                                                {"start_date", "*required* - dd:MM:yyyy"},
+                                                {"end_date", "*required* - dd:MM:yyyy"},
+                                                {"grade", "*required*"}};
+
+                                        JTable jTable2 = new JTable(data2, column);
+                                        jTable2.setEnabled(true);
+                                        jTable2.setFocusable(false);
+                                        jTable2.setSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        jTable2.getColumnModel().getColumn(0).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable2.getColumnModel().getColumn(1).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable2.setFillsViewportHeight(false);
+                                        JScrollPane jScrollPane2 = new JScrollPane(jTable2);
+                                        jScrollPane2.setPreferredSize(new Dimension(newEmployee.getWidth(), (6) * jTable2.getRowHeight()));
+                                        if (jScrollPane2.isWheelScrollingEnabled()) {
+                                            jScrollPane2.setPreferredSize(new Dimension(newEmployee.getWidth(), (6) * jTable2.getRowHeight() + 11));
+                                        }
+                                        newEmployee.add(jScrollPane2, newConstraint);
+
+                                        JButton addeducatie = new JButton("Click to add this education");
+                                        addeducatie.setEnabled(false);
+                                        addeducatie.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        addeducatie.setForeground(Color.BLACK);
+                                        addeducatie.setBackground(Color.RED);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(addeducatie, newConstraint);
+
+                                        JButton experiences = new JButton("Add Experiences");
+                                        experiences.setEnabled(false);
+                                        experiences.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                        experiences.setForeground(Color.BLACK);
+                                        experiences.setBackground(Color.blue);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(experiences, newConstraint);
+
+                                        String[][] data3 = {{"company", "*required*"},
+                                                {"position", "*required*"},
+                                                {"start_date", "*required* - dd:MM:yyyy"},
+                                                {"end_date", "*required* - dd:MM:yyyy"},
+                                                {"department", "*required*"}};
+
+                                        JTable jTable3 = new JTable(data3, column);
+                                        jTable3.setEnabled(true);
+                                        jTable3.setFocusable(false);
+                                        jTable3.setSize(new Dimension(newEmployee.getWidth(), 50));
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        jTable3.getColumnModel().getColumn(0).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable3.getColumnModel().getColumn(1).setPreferredWidth(newEmployee.getWidth() / 2);
+                                        jTable3.setFillsViewportHeight(false);
+                                        JScrollPane jScrollPane3 = new JScrollPane(jTable3);
+                                        jScrollPane3.setPreferredSize(new Dimension(newEmployee.getWidth(), (6) * jTable3.getRowHeight()));
+                                        if (jScrollPane3.isWheelScrollingEnabled()) {
+                                            jScrollPane3.setPreferredSize(new Dimension(newEmployee.getWidth(), (6) * jTable3.getRowHeight() + 11));
+                                        }
+                                        newEmployee.add(jScrollPane3, newConstraint);
+
+                                        JButton addexperienta = new JButton("Click to add this experience");
+                                        addexperienta.setEnabled(false);
+                                        addexperienta.setPreferredSize(new Dimension(newEmployee.getWidth(), 25));
+                                        addexperienta.setForeground(Color.BLACK);
+                                        addexperienta.setBackground(Color.RED);
+                                        newConstraint.gridy = newContor;
+                                        newContor++;
+                                        newEmployee.add(addexperienta, newConstraint);
+
+                                        final int[] contorTabel = {0};
+                                        //information
+                                        jTable.addMouseListener(new MouseAdapter() {
+                                            @Override
+                                            public void mousePressed(MouseEvent e) {
+                                                JTable target = (JTable) e.getSource();
+                                                int row = target.getSelectedRow();
+                                                int column = target.getSelectedColumn();
+                                                Object o = jTable.getValueAt(row, column);
+                                                if (o.toString().compareTo("*required*") == 0) {
+                                                    contorTabel[0]++;
+                                                }
+                                                if (contorTabel[0] == 6) {
+                                                    information.setEnabled(true);
+
+                                                    if (limbi.isEnabled() && educations.isEnabled() && experiences.isEnabled() && addSalary.isEnabled()) {
+                                                        Adauga.setEnabled(true);
+                                                    }
+                                                }
+                                                jTable.setValueAt("", row, column);
+                                                super.mousePressed(e);
+                                            }
+                                        });
+
+                                        final int[] contorTabel4 = {0};
+                                        //limbi
+                                        jTable4.addMouseListener(new MouseAdapter() {
+                                            @Override
+                                            public void mousePressed(MouseEvent e) {
+                                                JTable target = (JTable) e.getSource();
+                                                int row = target.getSelectedRow();
+                                                int column = target.getSelectedColumn();
+                                                Object o = jTable4.getValueAt(row, column);
+                                                if (o.toString().compareTo("*required*") == 0) {
+                                                    contorTabel4[0]++;
+                                                }
+                                                if (contorTabel4[0] == 2) {
+                                                    addlimba.setEnabled(true);
+                                                }
+                                                jTable4.setValueAt("", row, column);
+                                                super.mousePressed(e);
+                                            }
+                                        });
+
+                                        ArrayList<Limbi> limbiArrayList = new ArrayList<>();
+
+                                        try {
+                                            addlimba.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    limbi.setEnabled(true);
+                                                    if (information.isEnabled() && educations.isEnabled() && experiences.isEnabled() && addSalary.isEnabled()) {
+                                                        Adauga.setEnabled(true);
+                                                    }
+                                                    addlimba.setEnabled(false);
+                                                    contorTabel4[0] = 0;
+
+                                                    String limba_languages = (String) jTable4.getValueAt(0, 1);
+
+                                                    String level_languages = (String) jTable4.getValueAt(1, 1);
+
+                                                    Limbi limba = new Limbi();
+                                                    limba.setLimba(limba_languages);
+                                                    switch (level_languages) {
+                                                        case "Beginner" -> {
+                                                            limba.setBeginner(1);
+                                                            limba.setAdvanced(0);
+                                                            limba.setExperienced(0);
+                                                        }
+                                                        case "Advanced" -> {
+                                                            limba.setBeginner(0);
+                                                            limba.setAdvanced(1);
+                                                            limba.setExperienced(0);
+                                                        }
+                                                        case "Experienced" -> {
+                                                            limba.setBeginner(0);
+                                                            limba.setAdvanced(0);
+                                                            limba.setExperienced(1);
+                                                        }
+                                                    }
+                                                    limbiArrayList.add(limba);
+
+                                                    int i = 1;
+                                                    for (int j = 0; j <= 1; j++) {
+                                                        jTable4.setValueAt("*required*", j, i);
+                                                    }
+                                                }
+                                            });
+
+                                            final int[] contorTabel2 = {0};
+                                            //educatie
+                                            jTable2.addMouseListener(new MouseAdapter() {
+                                                @Override
+                                                public void mousePressed(MouseEvent e) {
+                                                    JTable target = (JTable) e.getSource();
+                                                    int row = target.getSelectedRow();
+                                                    int column = target.getSelectedColumn();
+                                                    Object o = jTable2.getValueAt(row, column);
+                                                    if (o.toString().compareTo("*required*") == 0 || o.toString().compareTo("*required* - dd:MM:yyyy") == 0) {
+                                                        contorTabel2[0]++;
+                                                    }
+                                                    if (contorTabel2[0] == 5) {
+                                                        addeducatie.setEnabled(true);
+                                                    }
+                                                    jTable2.setValueAt("", row, column);
+                                                    super.mousePressed(e);
+                                                }
+                                            });
+
+                                            TreeSet<Education> educationTreeSet = new TreeSet<>();
+                                            addeducatie.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    educations.setEnabled(true);
+                                                    if (limbi.isEnabled() && information.isEnabled() && experiences.isEnabled() && addSalary.isEnabled()) {
+                                                        Adauga.setEnabled(true);
+                                                    }
+                                                    addeducatie.setEnabled(false);
+                                                    contorTabel2[0] = 0;
+
+                                                    String level_education = (String) jTable2.getValueAt(0, 1);
+
+                                                    String name_education = (String) jTable2.getValueAt(1, 1);
+
+                                                    String start_date = (String) jTable2.getValueAt(2, 1);
+                                                    Calendar calendarStart = Calendar.getInstance();
+                                                    String end_date = (String) jTable2.getValueAt(3, 1);
+                                                    Calendar calendarEnd = Calendar.getInstance();
+
+                                                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                                                    try {
+                                                        calendarStart.setTime(sdf.parse(start_date));
+                                                        calendarStart.add(Calendar.DATE, 1);
+                                                        calendarEnd.setTime(sdf.parse(end_date));
+                                                        calendarEnd.add(Calendar.DATE, 1);
+                                                    } catch (ParseException parseException) {
+                                                        parseException.printStackTrace();
+                                                        calendarStart = null;
+                                                        calendarEnd = null;
+                                                        JFrame f = new JFrame();
+                                                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                                        JDialog d = new JDialog(f, "Input data are wrong", true);
+                                                        d.setLayout(new FlowLayout());
+                                                        d.add(new JLabel("Input data wrong, retry by choosing again the company | the department."));
+                                                        d.setSize(500, 150);
+                                                        d.setVisible(true);
+                                                        pack();
+                                                    }
+
+                                                    String double_education = (String) jTable2.getValueAt(4, 1);
+                                                    double grad;
+                                                    try {
+                                                        Double grade1 = Double.valueOf(double_education);
+                                                        grad = grade1;
+                                                    } catch (Exception e1) {
+                                                        Integer grade1 = Integer.valueOf(double_education);
+                                                        grad = (double) grade1;
+                                                    }
+
+                                                    educationTreeSet.add(new Education(calendarStart, calendarEnd, name_education, level_education, grad));
+                                                    int i = 1;
+                                                    for (int j = 0; j <= 4; j++) {
+                                                        if (j != 3 && j != 2) {
+                                                            jTable2.setValueAt("*required*", j, i);
+                                                        } else {
+                                                            jTable2.setValueAt("*required* - dd:MM:yyyy", j, i);
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                            final int[] contorTabel3 = {0};
+                                            //experienta
+                                            jTable3.addMouseListener(new MouseAdapter() {
+                                                @Override
+                                                public void mousePressed(MouseEvent e) {
+                                                    JTable target = (JTable) e.getSource();
+                                                    int row = target.getSelectedRow();
+                                                    int column = target.getSelectedColumn();
+                                                    Object o = jTable3.getValueAt(row, column);
+                                                    if (o.toString().compareTo("*required*") == 0 || o.toString().compareTo("*required* - dd:MM:yyyy") == 0) {
+                                                        contorTabel3[0]++;
+                                                    }
+                                                    if (contorTabel3[0] == 5) {
+                                                        addexperienta.setEnabled(true);
+                                                    }
+                                                    jTable3.setValueAt("", row, column);
+                                                    super.mousePressed(e);
+                                                }
+                                            });
+
+                                            TreeSet<Experience> experienceTreeSet = new TreeSet<>();
+                                            addexperienta.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    addexperienta.setEnabled(false);
+                                                    experiences.setEnabled(true);
+                                                    if (limbi.isEnabled() && educations.isEnabled() && information.isEnabled() && addSalary.isEnabled()) {
+                                                        Adauga.setEnabled(true);
+                                                    }
+                                                    contorTabel3[0] = 0;
+
+                                                    String company_experience = (String) jTable3.getValueAt(0, 1);
+
+                                                    String position_experience = (String) jTable3.getValueAt(1, 1);
+
+                                                    String start_date = (String) jTable3.getValueAt(2, 1);
+                                                    Calendar calendarStart = Calendar.getInstance();
+                                                    String end_date = (String) jTable3.getValueAt(3, 1);
+                                                    Calendar calendarEnd = Calendar.getInstance();
+
+                                                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                                                    try {
+                                                        calendarStart.setTime(sdf.parse(start_date));
+                                                        calendarStart.add(Calendar.DATE, 1);
+                                                        calendarEnd.setTime(sdf.parse(end_date));
+                                                        calendarEnd.add(Calendar.DATE, 1);
+                                                    } catch (ParseException parseException) {
+                                                        parseException.printStackTrace();
+                                                        calendarStart = null;
+                                                        calendarEnd = null;
+                                                        JFrame f = new JFrame();
+                                                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                                        JDialog d = new JDialog(f, "Input data are wrong", true);
+                                                        d.setLayout(new FlowLayout());
+                                                        d.add(new JLabel("Input data wrong, retry by choosing again the company | the department."));
+                                                        d.setSize(500, 150);
+                                                        d.setVisible(true);
+                                                        pack();
+                                                    }
+
+                                                    String department_experience = (String) jTable3.getValueAt(4, 1);
+
+                                                    experienceTreeSet.add(new Experience(calendarStart, calendarEnd, position_experience, company_experience, department_experience));
+                                                    int i = 1;
+                                                    for (int j = 0; j <= 4; j++) {
+                                                        if (j != 3 && j != 2) {
+                                                            jTable3.setValueAt("*required*", j, i);
+                                                        } else {
+                                                            jTable3.setValueAt("*required* - dd:MM:yyyy", j, i);
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                            salaryInput.addKeyListener(new KeyAdapter() {
+                                                @Override
+                                                public void keyTyped(KeyEvent e) {
+                                                    char c = e.getKeyChar();
+                                                    if (!((c >= '0') && (c <= '9') || (c == '.') ||
+                                                            (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_ENTER) ||
+                                                            (c == KeyEvent.VK_DELETE))) {
+                                                        getToolkit().beep();
+                                                        e.consume();
+                                                    } else {
+                                                        addSalary.setEnabled(true);
+                                                        if (limbi.isEnabled() && educations.isEnabled() && experiences.isEnabled() && information.isEnabled()) {
+                                                            Adauga.setEnabled(true);
+                                                        }
+                                                    }
+                                                    super.keyTyped(e);
+                                                }
+                                            });
+
+                                            Adauga.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    String Nume = (String) jTable.getValueAt(0, 1);
+                                                    String Prenume = (String) jTable.getValueAt(1, 1);
+                                                    String Sex = (String) jTable.getValueAt(2, 1);
+                                                    String Data_de_nastere = (String) jTable.getValueAt(3, 1);
+                                                    String Telefon = (String) jTable.getValueAt(4, 1);
+                                                    String Email = (String) jTable.getValueAt(5, 1);
+
+                                                    Information information1 = new Information();
+                                                    information1.setNume(Nume);
+                                                    information1.setPrenume(Prenume);
+                                                    information1.setSex(Sex);
+                                                    information1.setData_de_nastere(Data_de_nastere);
+                                                    information1.setTelefon(Telefon);
+                                                    information1.setEmail(Email);
+                                                    information1.setLanguages(limbiArrayList);
+
+                                                    Resume.ResumeBuilder builder = new Resume.ResumeBuilder();
+                                                    builder.information(information1);
+                                                    builder.education(educationTreeSet);
+                                                    builder.experiences(experienceTreeSet);
+                                                    Resume resume = builder.build();
+
+                                                    String salariu = salaryInput.getText();
+                                                    double salaryAdmin;
+                                                    try {
+                                                        Double grade1 = Double.valueOf(salariu);
+                                                        salaryAdmin = grade1;
+                                                    } catch (Exception e1) {
+                                                        Integer grade1 = Integer.valueOf(salariu);
+                                                        salaryAdmin = (double) grade1;
+                                                    }
+
+                                                    Employee employee = new Employee(resume, company1.name, salaryAdmin);
+                                                    Company company2 = application.getCompany(employee.company);
+                                                    company2.add(employee, jButtonDepartment.departament);
+                                                    jTabbedPaneCompany.setSelectedIndex(0);
+                                                    jButtonDepartmentForAddEmployee.jButton.doClick();
+                                                }
+                                            });
+                                        } catch (Exception e2) {
+                                            JFrame f = new JFrame();
+                                            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                            JDialog d = new JDialog(f, "Input data are wrong", true);
+                                            d.setLayout(new FlowLayout());
+                                            d.add(new JLabel("Input data wrong, retry by choosing again the company | the department."));
+                                            d.setSize(500, 150);
+                                            d.setVisible(true);
+                                            pack();
+                                        }
+
+                                        newConstraint.gridy = newContor;
+                                        newConstraint.weighty = 1;
+                                        newConstraint.weightx = 1;
+                                        newEmployee.add(new JLabel(""), newConstraint);
+                                        newEmployee.setVisible(true);
+
                                         bagConstraints.weightx = 1;
                                         bagConstraints.weighty = 1;
                                         bagConstraints.gridy = contorEmployees;
@@ -870,6 +1465,7 @@ public class GUIInterface extends JFrame {
                                         EmployeesPanel.setVisible(true);
                                         jTabbedPaneCompany.setSelectedIndex(1);
                                         jTabbedPaneCompany.setSelectedIndex(0);
+
                                         pack();
                                     }
                                 });
