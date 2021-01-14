@@ -34,6 +34,9 @@ public class Manager extends Employee {
                             Company company = application.getCompany(job.company);
                             application.remove(user);
                             job.removeObserver(user);
+                            Notification notification3 = new Notification(company, job, user);
+                            notification3.notificationType = Notification.NotificationType.Accepted;
+                            user.update(notification3);
                             Employee employee = user.convert();
                             employee.salary = job.salary;
                             employee.company = job.company;

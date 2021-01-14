@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.bidib.jbidib.swinglabs.swingx:swingx-plaf:1.6.5-1" type="repository">
+    <properties maven-id="org.bidib.jbidib.swinglabs.swingx:swingx-plaf:1.6.5-1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bidib/jbidib/swinglabs/swingx/swingx-plaf/1.6.5-1/swingx-plaf-1.6.5-1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/bidib/jbidib/swinglabs/swingx/swingx-common/1.6.5-1/swingx-common-1.6.5-1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

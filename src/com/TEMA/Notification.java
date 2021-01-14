@@ -20,7 +20,8 @@ public class Notification {
     enum NotificationType {
         NewJob,
         ClosedJob,
-        RequestDeclined
+        RequestDeclined,
+        Accepted
     }
 
     public void sendNotification(){
@@ -28,6 +29,7 @@ public class Notification {
             case NewJob -> System.out.println("In compania: " + company.name + " a aparut un job nou. Jobul se numeste: " + job.name + " . Aceasta notificare a fost primita de utilizatorul: " + user.cv.information.getNume());
             case ClosedJob -> System.out.println("In compania: " + company.name + " s-a inchis jobul: " + job.name + " . Aceasta notificare a fost primita de utilizatorul: " + user.cv.information.getNume());
             case RequestDeclined -> System.out.println("In compania: " + company.name + ", jobul: " + job.name + " user-ului cu numele: " + user.cv.information.getNume() + " i-a fost respinsa cererea de aplicare.");
+            case Accepted -> System.out.println("User-ul " + user.cv.information.getNume() + " " + user.cv.information.getPrenume() + " a fost angajat in compania: " + company.name + " , job: " + job.name);
         }
     }
 

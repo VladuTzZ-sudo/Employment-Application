@@ -10,15 +10,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 
 public class Test {
     public static void main(String[] args) {
         Application aplication = Application.getInstance();
         int nrUsers = 0, nrEmployees = 0, nrRecruiters = 0;
+
+        ArrayList<Job> jobsArrayList = new ArrayList<>();
 
         JSONParser parser = new JSONParser();
         try {
@@ -42,7 +41,7 @@ public class Test {
 
                     String type = (String) department.get("type");
                     Departments departmentType;
-                    switch (type){
+                    switch (type) {
                         case "IT":
                             departmentType = Departments.IT;
                             departaments.add(departmentFactory.getDepartment(departmentType));
@@ -59,13 +58,6 @@ public class Test {
                             departmentType = Departments.Finance;
                             departaments.add(departmentFactory.getDepartment(departmentType));
                             break;
-                    }
-                }
-
-                Departament ITDepartment = null;
-                for (Departament departament : departaments) {
-                    if (departament.getType().compareTo("IT") == 0) {
-                        ITDepartment = departament;
                     }
                 }
 
@@ -140,7 +132,7 @@ public class Test {
                     Constraint anAbsolvire = new Constraint(gradMin, gradMax);
                     Constraint anExperienta = new Constraint(expMin, expMax);
                     Constraint medie = new Constraint(avMin, avMax);
-                    ITDepartment.add(new Job(nameJob, name, true, anAbsolvire, anExperienta, medie, salary, noPosition));
+                    jobsArrayList.add(new Job(nameJob, name, true, anAbsolvire, anExperienta, medie, salary, noPosition));
                 }
             }
         } catch (ParseException | IOException e) {
@@ -743,10 +735,23 @@ public class Test {
             e.printStackTrace();
         }
 
+        for (Company company : aplication.Companies) {
+            for (Job jobSaved : jobsArrayList) {
+                if (company.name.compareTo(jobSaved.company) == 0) {
+                    for (Departament departament : company.departaments) {
+                        if (departament.getType().compareTo("IT") == 0) {
+                            departament.add(jobSaved);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             GUIInterface guiInterface = new GUIInterface("Job Finder Software");
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -767,10 +772,7 @@ public class Test {
             }
         }*/
 
-        System.out.println(aplication.Users);
-        System.out.println(aplication.getCompanies());
-
-
-
+        //System.out.println(aplication.Users);
+        //System.out.println(aplication.getCompanies());
     }
 }

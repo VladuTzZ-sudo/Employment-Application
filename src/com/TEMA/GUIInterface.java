@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.logging.Logger;
 
 public class GUIInterface extends JFrame {
     private JPanel HomePage;
@@ -16,14 +15,10 @@ public class GUIInterface extends JFrame {
     private JButton adminPageButton;
     private JButton managerPageButton;
     private JButton profilePageButton;
-    private JButton backButton1;
     private JPanel LeftCompanyPanel;
-    private JPanel RightComapanyPanel;
     private JButton BackFromCompanyChoosedPage;
     private JButton backButton2;
     private JPanel MainPage;
-    private JPanel APage;
-    private JButton backbutton3;
     private JButton ButtonSearchUsersProfile;
     private JTextField CautareUsers;
     private JPanel TabelPanel;
@@ -57,7 +52,15 @@ public class GUIInterface extends JFrame {
     private JPanel EmployeesPanel = new JPanel();
     private JPanel JobsPanel = new JPanel();
     private JPanel EmployeeInfo = new JPanel();
+    private JScrollPane EmployeesScroll = new JScrollPane(EmployeesPanel);
+    private JScrollPane JobsScroll = new JScrollPane(JobsPanel);
+    private JScrollPane EmplScroll = new JScrollPane(EmployeeInfo);
     private JScrollPane jScrollPane1;
+    private JSplitPane SplitAdminMove;
+    private JPanel AdminMove;
+    private JTextField TextAdminMove;
+    private JTextField Text2AdminMove;
+    private JButton ButtonAdminMove;
 
     public GUIInterface(String titlu) {
         super(titlu);
@@ -70,6 +73,11 @@ public class GUIInterface extends JFrame {
 
         setVisible(true);
         pack();
+        profilePageButton.setFocusable(false);
+        adminPageButton.setFocusable(false);
+        managerPageButton.setFocusable(false);
+        BackFromUserOrCompany.setFocusable(false);
+
         profilePageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,12 +106,6 @@ public class GUIInterface extends JFrame {
         });
 
         backButton2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setContentPane(HomePage);
-            }
-        });
-        backbutton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setContentPane(HomePage);
@@ -223,20 +225,30 @@ public class GUIInterface extends JFrame {
         splitPaneCompany.setEnabled(false);
         CompanyChoosedPage.setRightComponent(splitPaneCompany);
         LeftCompanyPanel = new JPanel();
-        RightComapanyPanel = new JPanel();
+        JPanel rightComapanyPanel = new JPanel();
         splitPaneCompany.setLeftComponent(LeftCompanyPanel);
-        splitPaneCompany.setRightComponent(RightComapanyPanel);
+        splitPaneCompany.setRightComponent(rightComapanyPanel);
 
         LeftCompanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getLeftComponent().getWidth(), splitPaneCompany.getLeftComponent().getHeight()));
-        RightComapanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        rightComapanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
 
         JTabbedPane jTabbedPaneCompany = new JTabbedPane();
-        jTabbedPaneCompany.add("Employees", EmployeesPanel);
-        jTabbedPaneCompany.add("Employee Info", EmployeeInfo);
-        jTabbedPaneCompany.add("Jobs", JobsPanel);
-        EmployeesPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
-        EmployeeInfo.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
-        JobsPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+
+        EmployeesScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        EmployeesScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        EmplScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        EmplScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        JobsScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        JobsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        EmployeesPanel.removeAll();
+        EmployeeInfo.removeAll();
+        JobsPanel.removeAll();
+        jTabbedPaneCompany.add("Employees", EmployeesScroll);
+        jTabbedPaneCompany.add("Employee Info", EmplScroll);
+        jTabbedPaneCompany.add("Jobs", JobsScroll);
+        EmployeesScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        EmplScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        JobsScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         LeftCompanyPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0;
@@ -245,8 +257,76 @@ public class GUIInterface extends JFrame {
         constraints.weighty = 0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.NORTH;
-        splitPaneCompany.setRightComponent(jTabbedPaneCompany);
+
+        jTabbedPaneCompany.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(jTabbedPaneCompany.getSelectedIndex() == 1){
+                    Text2AdminMove.setEnabled(true);
+                    TextAdminMove.setEnabled(true);
+                    ButtonAdminMove.setEnabled(true);
+                } else {
+                    Text2AdminMove.setEnabled(false);
+                    TextAdminMove.setEnabled(false);
+                    ButtonAdminMove.setEnabled(false);
+                }
+            }
+        });
+
+        SplitAdminMove = new JSplitPane();
+        AdminMove = new JPanel();
+        TextAdminMove = new JTextField("Type Company");
+        Text2AdminMove = new JTextField("Type Department");
+        ButtonAdminMove = new JButton("Move Employee");
+        AdminMove.setLayout(new GridLayout());
+        Text2AdminMove.setEnabled(false);
+        TextAdminMove.setEnabled(false);
+        ButtonAdminMove.setEnabled(false);
+        AdminMove.add(TextAdminMove);
+        AdminMove.add(Text2AdminMove);
+        AdminMove.add(ButtonAdminMove);
+
+        TextAdminMove.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                TextAdminMove.setText("");
+                super.mouseClicked(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                TextAdminMove.setText("");
+                super.mousePressed(e);
+            }
+        });
+
+        Text2AdminMove.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Text2AdminMove.setText("");
+                super.mouseClicked(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Text2AdminMove.setText("");
+                super.mousePressed(e);
+            }
+        });
+
+        SplitAdminMove.setLeftComponent(AdminMove);
+        SplitAdminMove.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        SplitAdminMove.setEnabled(false);
+        SplitAdminMove.setRightComponent(jTabbedPaneCompany);
+        splitPaneCompany.setRightComponent(SplitAdminMove);
+
         int contor = 0;
+        JButton Alege = new JButton("Choose a company");
+        Alege.setPreferredSize(new Dimension(LeftCompanyPanel.getWidth(), 25));
+        Alege.setBackground(Color.BLACK);
+        contor++;
+        LeftCompanyPanel.add(Alege, constraints);
+
         Application application = Application.getInstance();
 
         for (Company company : application.Companies) {
@@ -254,7 +334,8 @@ public class GUIInterface extends JFrame {
             jButtonCompanies.add(jButtonCompany);
             JButton jButton = jButtonCompany.jButton;
             jButton.setPreferredSize(new Dimension(splitPaneCompany.getLeftComponent().getWidth(), 50));
-            jButton.setBackground(Color.YELLOW);
+            jButton.setFocusable(false);
+            jButton.setBackground(Color.RED);
             constraints.gridy = contor;
             contor++;
             LeftCompanyPanel.add(jButton, constraints);
@@ -274,11 +355,19 @@ public class GUIInterface extends JFrame {
                     constraints1.fill = GridBagConstraints.HORIZONTAL;
                     constraints1.anchor = GridBagConstraints.NORTH;
                     int contor1 = 0;
+
+                    JButton Alege2 = new JButton("Choose a company");
+                    Alege2.setPreferredSize(new Dimension(jPanel.getWidth(), 25));
+                    Alege2.setBackground(Color.BLACK);
+                    contor1++;
+                    jPanel.add(Alege, constraints1);
+
                     for (Company company1 : application.Companies) {
                         JButtonCompany jButton11 = new JButtonCompany(company1, company1.name);
                         JButton jButton1 = jButton11.jButton;
                         jButton1.setPreferredSize(new Dimension(jPanel.getWidth(), 50));
-                        jButton1.setBackground(Color.YELLOW);
+                        jButton1.setFocusable(false);
+                        jButton1.setBackground(Color.RED);
                         constraints1.gridy = contor1;
                         contor1++;
                         jPanel.add(jButton1, constraints1);
@@ -288,6 +377,15 @@ public class GUIInterface extends JFrame {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     splitPaneCompany.setLeftComponent(LeftCompanyPanel);
+                                    JButton Alege = new JButton("Choose a company");
+                                    Alege.setPreferredSize(new Dimension(LeftCompanyPanel.getWidth(), 25));
+                                    Alege.setBackground(Color.BLACK);
+                                    constraints.gridy = 0;
+                                    constraints.weighty = 0;
+                                    constraints.weightx = 0;
+                                    LeftCompanyPanel.add(Alege, constraints);
+
+                                    LeftCompanyPanel.setVisible(true);
                                     splitPaneCompany.setVisible(true);
                                     pack();
                                 }
@@ -297,6 +395,7 @@ public class GUIInterface extends JFrame {
                                 JButtonDepartment jButtonDepartment = new JButtonDepartment(departament, departament.getType());
                                 JButton jButton2 = jButtonDepartment.jButton;
                                 jButton2.setPreferredSize(new Dimension(jPanel.getWidth(), 25));
+                                jButton2.setFocusable(false);
                                 jButton2.setBackground(Color.BLUE);
 
                                 jButton2.addActionListener(new ActionListener() {
@@ -312,13 +411,415 @@ public class GUIInterface extends JFrame {
                                         bagConstraints.fill = GridBagConstraints.HORIZONTAL;
                                         bagConstraints.anchor = GridBagConstraints.NORTH;
 
-                                        int contorEmployees = 0;
+                                        JButton DepartmentType = new JButton(departament.getType());
+                                        DepartmentType.setFocusable(false);
+                                        DepartmentType.setEnabled(false);
+                                        DepartmentType.setPreferredSize(new Dimension(EmployeesPanel.getWidth(), 25));
+                                        DepartmentType.setBackground(Color.blue);
+                                        EmployeesPanel.add(DepartmentType, bagConstraints);
+
+                                        int contorEmployees = 1;
                                         for (Employee employee : jButtonDepartment.departament.getEmployees()) {
                                             JButton employeeData = new JButton(employee.cv.information.getNume() + " " + employee.cv.information.getPrenume());
                                             employeeData.setEnabled(true);
+                                            employeeData.setFocusable(false);
                                             employeeData.setPreferredSize(new Dimension(EmployeesPanel.getWidth(), 50));
                                             employeeData.setForeground(Color.BLACK);
-                                            employeeData.setBackground(Color.CYAN);
+
+                                            employeeData.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    EmployeeInfo.removeAll();
+                                                    EmployeeInfo.setLayout(new GridBagLayout());
+
+                                                    GridBagConstraints constraints2 = new GridBagConstraints();
+                                                    constraints2.weightx = 0;
+                                                    constraints2.weighty = 0;
+                                                    constraints2.gridx = 0;
+                                                    int contor2 = 1;
+                                                    constraints2.gridy = 0;
+                                                    constraints2.fill = GridBagConstraints.HORIZONTAL;
+                                                    constraints2.anchor = GridBagConstraints.NORTH;
+
+                                                    JButton DepartmentType2 = new JButton(jButtonDepartment.departament.getType());
+                                                    DepartmentType2.setFocusable(false);
+                                                    DepartmentType2.setEnabled(false);
+                                                    DepartmentType2.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 25));
+                                                    DepartmentType2.setBackground(Color.blue);
+                                                    EmployeeInfo.add(DepartmentType2, constraints2);
+
+                                                    JButton name = new JButton(employee.cv.information.getNume() + " " + employee.cv.information.getPrenume());
+                                                    name.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    name.setFocusable(false);
+                                                    name.setBackground(Color.ORANGE);
+                                                    constraints2.gridy = contor2;
+                                                    EmployeeInfo.add(name, constraints2);
+                                                    contor2++;
+
+                                                    JButton company = new JButton(employee.company);
+                                                    company.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 25));
+                                                    company.setFocusable(false);
+                                                    company.setBackground(Color.GREEN);
+                                                    constraints2.gridy = contor2;
+                                                    EmployeeInfo.add(company, constraints2);
+                                                    contor2++;
+
+                                                    JButton salary = new JButton(employee.salary.toString());
+                                                    salary.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 25));
+                                                    salary.setFocusable(false);
+                                                    salary.setBackground(Color.blue);
+                                                    constraints2.gridy = contor2;
+                                                    EmployeeInfo.add(salary, constraints2);
+                                                    contor2++;
+
+                                                    JButton information = new JButton("Information");
+                                                    information.setEnabled(true);
+                                                    information.setFocusable(false);
+                                                    information.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    information.setForeground(Color.BLACK);
+                                                    information.setBackground(Color.YELLOW);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    EmployeeInfo.add(information, constraints2);
+
+                                                    String[][] data4 = {{"Nume", employee.cv.information.getNume()},
+                                                            {"Prenume", employee.cv.information.getPrenume()},
+                                                            {"Sex", employee.cv.information.getSex()},
+                                                            {"Data de nastere", employee.cv.information.getData_de_nastere()},
+                                                            {"Telefon", employee.cv.information.getTelefon()},
+                                                            {"Email", employee.cv.information.getEmail()}};
+
+                                                    String[] column = new String[]{"About", "Date"};
+                                                    JTable jTable = new JTable(data4, column);
+                                                    jTable.setSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    jTable.setEnabled(false);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    jTable.getColumnModel().getColumn(0).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                    jTable.getColumnModel().getColumn(1).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                    jTable.setFillsViewportHeight(false);
+                                                    JScrollPane jScrollPane = new JScrollPane(jTable);
+                                                    jScrollPane.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (7) * jTable.getRowHeight()));
+                                                    if (jScrollPane.isWheelScrollingEnabled()) {
+                                                        jScrollPane.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (7) * jTable.getRowHeight() + 11));
+                                                    }
+                                                    EmployeeInfo.add(jScrollPane, constraints2);
+
+                                                    JButton limbi = new JButton("Limbi");
+                                                    limbi.setEnabled(true);
+                                                    limbi.setFocusable(false);
+                                                    limbi.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    limbi.setForeground(Color.BLACK);
+                                                    limbi.setBackground(Color.DARK_GRAY);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    EmployeeInfo.add(limbi, constraints2);
+
+                                                    String[] column2 = new String[]{"Limba", "Nivel"};
+                                                    String[][] data2 = new String[employee.cv.information.getLanguages().size()][2];
+                                                    int i = 0;
+                                                    for (Limbi language : employee.cv.information.getLanguages()) {
+                                                        data2[i][0] = language.getLimba();
+                                                        data2[i][1] = language.getLevel();
+                                                        i++;
+                                                    }
+                                                    JTable jTable2 = new JTable(data2, column2);
+                                                    jTable2.setSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    jTable2.setEnabled(false);
+                                                    jTable2.setFocusable(false);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    jTable2.getColumnModel().getColumn(0).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                    jTable2.getColumnModel().getColumn(1).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                    jTable2.setFillsViewportHeight(false);
+                                                    JScrollPane jScrollPane2 = new JScrollPane(jTable2);
+                                                    jScrollPane2.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (employee.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight()));
+                                                    if (jScrollPane2.isWheelScrollingEnabled()) {
+                                                        jScrollPane2.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (employee.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight() + 11));
+                                                    }
+                                                    EmployeeInfo.add(jScrollPane2, constraints2);
+
+                                                    JButton Educations = new JButton("Educations");
+                                                    Educations.setEnabled(true);
+                                                    Educations.setFocusable(false);
+                                                    Educations.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    Educations.setForeground(Color.BLACK);
+                                                    Educations.setBackground(Color.BLUE);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    EmployeeInfo.add(Educations, constraints2);
+
+                                                    for (Education education : employee.cv.educations) {
+                                                        JButton buttons = new JButton();
+                                                        buttons.setFocusable(false);
+                                                        if (education.end != null) {
+                                                            buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                                                    education.end.get(Calendar.DATE) + "." + education.end.get(Calendar.MONTH) + "." + education.end.get(Calendar.YEAR));
+                                                        } else {
+                                                            buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                                                    "now");
+                                                        }
+                                                        buttons.setEnabled(true);
+                                                        buttons.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 25));
+                                                        buttons.setForeground(Color.BLACK);
+                                                        buttons.setBackground(Color.RED);
+                                                        constraints2.gridy = contor2;
+                                                        contor2++;
+                                                        EmployeeInfo.add(buttons, constraints2);
+
+                                                        String[][] data3 = {{"Level", education.level},
+                                                                {"Institutie", education.institutie},
+                                                                {"Medie", education.medie.toString()}};
+
+                                                        JTable jTable3 = new JTable(data3, column);
+                                                        jTable3.setEnabled(false);
+                                                        jTable3.setFocusable(false);
+                                                        jTable3.setSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                        constraints2.gridy = contor2;
+                                                        contor2++;
+                                                        jTable3.getColumnModel().getColumn(0).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                        jTable3.getColumnModel().getColumn(1).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                        jTable3.setFillsViewportHeight(false);
+                                                        JScrollPane jScrollPane3 = new JScrollPane(jTable3);
+                                                        jScrollPane3.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (4 * jTable3.getRowHeight())));
+                                                        if (jScrollPane3.isWheelScrollingEnabled()) {
+                                                            jScrollPane3.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (4 * jTable3.getRowHeight() + 11)));
+                                                        }
+                                                        EmployeeInfo.add(jScrollPane3, constraints2);
+                                                    }
+
+                                                    JButton Experiences = new JButton("Experiences");
+                                                    Experiences.setEnabled(true);
+                                                    Experiences.setFocusable(false);
+                                                    Experiences.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                    Experiences.setForeground(Color.BLACK);
+                                                    Experiences.setBackground(Color.BLUE);
+                                                    constraints2.gridy = contor2;
+                                                    contor2++;
+                                                    EmployeeInfo.add(Experiences, constraints2);
+
+                                                    for (Experience experience : employee.cv.experiences) {
+                                                        JButton buttonsExperience = new JButton();
+                                                        buttonsExperience.setFocusable(false);
+                                                        if (experience.end != null) {
+                                                            buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                                                    experience.end.get(Calendar.DATE) + "." + experience.end.get(Calendar.MONTH) + "." + experience.end.get(Calendar.YEAR));
+                                                        } else {
+                                                            buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                                                    "now");
+                                                        }
+                                                        buttonsExperience.setEnabled(true);
+                                                        buttonsExperience.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), 25));
+                                                        buttonsExperience.setForeground(Color.BLACK);
+                                                        buttonsExperience.setBackground(Color.RED);
+                                                        constraints2.gridy = contor2;
+                                                        contor2++;
+                                                        EmployeeInfo.add(buttonsExperience, constraints2);
+
+                                                        String[][] data5 = {{"Company", experience.company},
+                                                                {"Departament", experience.department},
+                                                                {"Pozitie", experience.pozitie}};
+
+                                                        JTable jTable4 = new JTable(data5, column);
+                                                        jTable4.setSize(new Dimension(EmployeeInfo.getWidth(), 50));
+                                                        constraints2.gridy = contor2;
+                                                        contor2++;
+                                                        jTable4.getColumnModel().getColumn(0).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                        jTable4.getColumnModel().getColumn(1).setPreferredWidth(EmployeeInfo.getWidth() / 2);
+                                                        jTable4.setFillsViewportHeight(false);
+                                                        jTable4.setEnabled(false);
+                                                        jTable4.setFocusable(false);
+                                                        JScrollPane jScrollPane4 = new JScrollPane(jTable4);
+                                                        jScrollPane4.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (4 * jTable4.getRowHeight())));
+                                                        if (jScrollPane4.isWheelScrollingEnabled()) {
+                                                            jScrollPane4.setPreferredSize(new Dimension(EmployeeInfo.getWidth(), (4 * jTable4.getRowHeight() + 11)));
+                                                        }
+                                                        EmployeeInfo.add(jScrollPane4, constraints2);
+
+                                                        GridBagLayout JobLayout = new GridBagLayout();
+                                                        GridBagConstraints JobConstraints2 = new GridBagConstraints();
+                                                        JobsPanel.setLayout(JobLayout);
+                                                        JobConstraints2.fill = GridBagConstraints.HORIZONTAL;
+                                                        JobConstraints2.gridx = 0;
+                                                        JobConstraints2.weighty = 0;
+                                                        JobConstraints2.weightx = 0;
+                                                        JobConstraints2.anchor = GridBagConstraints.NORTH;
+                                                        int contorJob = 0;
+                                                        JobsPanel.removeAll();
+                                                        for (Job job : jButtonCompany.company.getJobs()) {
+                                                            JButton NameJob = new JButton(String.valueOf(job.name));
+                                                            NameJob.setEnabled(true);
+                                                            NameJob.setFocusable(false);
+                                                            NameJob.setPreferredSize(new Dimension(JobsPanel.getWidth(), 50));
+                                                            NameJob.setForeground(Color.BLACK);
+                                                            //NameJob.setBackground(Color.GREEN);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(NameJob, JobConstraints2);
+
+                                                            JButton NameCompany = new JButton(String.valueOf(job.company));
+                                                            NameCompany.setEnabled(true);
+                                                            NameCompany.setFocusable(false);
+                                                            NameCompany.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            NameCompany.setForeground(Color.BLACK);
+                                                            NameCompany.setBackground(Color.YELLOW);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(NameCompany, JobConstraints2);
+
+                                                            JButton Salariu = new JButton("Salariu");
+                                                            Salariu.setEnabled(true);
+                                                            Salariu.setFocusable(false);
+                                                            Salariu.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            Salariu.setForeground(Color.BLACK);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(Salariu, JobConstraints2);
+
+                                                            JButton Money = new JButton(String.valueOf(Double.valueOf(job.salary)));
+                                                            Money.setEnabled(true);
+                                                            Money.setFocusable(false);
+                                                            Money.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            Money.setForeground(Color.BLACK);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(Money, JobConstraints2);
+
+                                                            JButton AnAbsolvire = new JButton("CONSTRANGERE AN ABSOLVIRE");
+                                                            AnAbsolvire.setEnabled(true);
+                                                            AnAbsolvire.setFocusable(false);
+                                                            AnAbsolvire.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            AnAbsolvire.setForeground(Color.BLACK);
+                                                            AnAbsolvire.setBackground(Color.RED);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(AnAbsolvire, JobConstraints2);
+
+                                                            String[][] data1 = {{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
+                                                                    {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
+                                                            if (job.anAbsolvire.inferior == -1) {
+                                                                data1 = new String[][]{{"An minim", "null"},
+                                                                        {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
+                                                            }
+                                                            if (job.anAbsolvire.superior == 3000) {
+                                                                data1 = new String[][]{{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
+                                                                        {"An maxim", "null"}};
+                                                            }
+                                                            if (job.anAbsolvire.inferior == -1 && job.anAbsolvire.superior == 3000) {
+                                                                data1 = new String[][]{{"An minim", "null"},
+                                                                        {"An maxim", "null"}};
+                                                            }
+
+                                                            JTable jTableJob = new JTable(data1, column);
+                                                            jTableJob.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                                            jTableJob.setEnabled(false);
+                                                            jTableJob.setFocusable(false);
+
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            jTableJob.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTableJob.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTableJob.setFillsViewportHeight(false);
+                                                            JScrollPane jScrollPaneJobs = new JScrollPane(jTableJob);
+                                                            jScrollPaneJobs.setPreferredSize(new Dimension(jTableJob.getWidth(), 3 * 20));
+                                                            JobsPanel.add(jScrollPaneJobs, JobConstraints2);
+
+                                                            JButton AniExperienta = new JButton("CONSTRANGERE EXPERIENTA");
+                                                            AniExperienta.setEnabled(true);
+                                                            AniExperienta.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            AniExperienta.setForeground(Color.BLACK);
+                                                            AniExperienta.setBackground(Color.ORANGE);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(AniExperienta, JobConstraints2);
+
+                                                            String[][] data6 = {{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
+                                                                    {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
+                                                            if (job.aniExperienta.inferior == -1) {
+                                                                data6 = new String[][]{{"Experienta minima", "null"},
+                                                                        {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
+                                                            }
+                                                            if (job.aniExperienta.superior == 3000) {
+                                                                data6 = new String[][]{{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
+                                                                        {"Experienta maxima", "null"}};
+                                                            }
+                                                            if (job.aniExperienta.inferior == -1 && job.aniExperienta.superior == 3000) {
+                                                                data6 = new String[][]{{"Experienta minima", "null"},
+                                                                        {"Experienta maxima", "null"}};
+                                                            }
+
+                                                            JTable jTable6 = new JTable(data6, column);
+                                                            jTable6.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                                            jTable6.setEnabled(false);
+                                                            jTable6.setFocusable(false);
+
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            jTable6.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTable6.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTable6.setFillsViewportHeight(false);
+                                                            JScrollPane jScrollPane6 = new JScrollPane(jTable6);
+                                                            jScrollPane6.setPreferredSize(new Dimension(jTable6.getWidth(), 3 * 20));
+                                                            JobsPanel.add(jScrollPane6, JobConstraints2);
+
+                                                            JButton MedieNecesara = new JButton("CONSTRANGERE MEDIE");
+                                                            MedieNecesara.setEnabled(true);
+                                                            MedieNecesara.setFocusable(false);
+                                                            MedieNecesara.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                                            MedieNecesara.setForeground(Color.BLACK);
+                                                            MedieNecesara.setBackground(Color.BLUE);
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            JobsPanel.add(MedieNecesara, JobConstraints2);
+
+                                                            String[][] data7 = {{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
+                                                                    {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
+                                                            if (job.medieAcademica.inferior == -1) {
+                                                                data7 = new String[][]{{"Medie minima", "null"},
+                                                                        {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
+                                                            }
+                                                            if (job.medieAcademica.superior == 3000) {
+                                                                data7 = new String[][]{{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
+                                                                        {"Medie maxima", "null"}};
+                                                            }
+                                                            if (job.medieAcademica.inferior == -1 && job.medieAcademica.superior == 3000) {
+                                                                data7 = new String[][]{{"Medie minima", "null"},
+                                                                        {"Medie maxima", "null"}};
+                                                            }
+
+                                                            JTable jTable7 = new JTable(data7, column);
+                                                            jTable7.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                                            jTable7.setEnabled(false);
+                                                            jTable7.setFocusable(false);
+
+                                                            JobConstraints2.gridy = contorJob;
+                                                            contorJob++;
+                                                            jTable7.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTable7.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                                            jTable7.setFillsViewportHeight(false);
+                                                            JScrollPane jScrollPane7 = new JScrollPane(jTable7);
+                                                            jScrollPane7.setPreferredSize(new Dimension(jTable7.getWidth(), 3 * 20));
+                                                            JobsPanel.add(jScrollPane7, JobConstraints2);
+
+                                                        }
+                                                        JobConstraints2.weightx = 1;
+                                                        JobConstraints2.weighty = 1;
+                                                        JobConstraints2.gridy = contorJob;
+                                                        JobsPanel.add(new JLabel(" "), JobConstraints2);
+                                                        JobsPanel.setVisible(true);
+                                                        pack();
+                                                    }
+
+                                                    constraints2.gridy = contor2;
+                                                    constraints2.weighty = 1;
+                                                    constraints2.weightx = 1;
+                                                    EmployeeInfo.add(new JLabel(""), constraints2);
+                                                    jTabbedPaneCompany.setSelectedIndex(1);
+                                                    EmployeeInfo.setVisible(true);
+                                                    pack();
+                                                }
+                                            });
+
                                             bagConstraints.gridy = contorEmployees;
                                             contorEmployees++;
                                             EmployeesPanel.add(employeeData, bagConstraints);
@@ -619,10 +1120,6 @@ public class GUIInterface extends JFrame {
                     constraints.weightx = 1;
                     UserInfo.add(new JLabel(" "), constraints);
 
-                    //jScrollPane1 = new JScrollPane(UserInfo);
-                    //jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                    //jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                    //SplitUsersAdmin.setRightComponent(jScrollPane1);
                     UserInfo.setVisible(true);
                     setVisible(true);
                     pack();
@@ -648,10 +1145,6 @@ public class GUIInterface extends JFrame {
     public void UserOrCompanyPageCreation() {
         SplitFromUserOrCompany.setResizeWeight(0.52);
         SplitFromUserOrCompany.setEnabled(false);
-    }
-
-    public void AdminPageCreation() {
-
     }
 
     public void ManagerPageCreation() {
@@ -829,6 +1322,9 @@ public class GUIInterface extends JFrame {
                     employee.salary = request.getKey().salary;
                     employee.company = request.getKey().company;
                     manager.requests.remove(request);
+                    Notification notification3 = new Notification(company, request.getKey(), (User) request.getValue1());
+                    notification3.notificationType = Notification.NotificationType.Accepted;
+                    ((User) request.getValue1()).update(notification3);
                     Departament departament = company.search(request.getKey());
                     departament.add(employee);
                     ArrayList<Company> companies = application.getCompanies();
@@ -943,6 +1439,7 @@ public class GUIInterface extends JFrame {
             jButtonEdited = new JButtonEdited(request, request.getValue1().cv.information.getNume() + " " + request.getValue1().cv.information.getPrenume());
             JButton jButton = jButtonEdited.jButton;
             jButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            jButton.setFocusable(false);
             jButton.add(labeltest);
             jButton.setEnabled(true);
             jButton.setPreferredSize(new Dimension(Requests.getWidth(), 50));
