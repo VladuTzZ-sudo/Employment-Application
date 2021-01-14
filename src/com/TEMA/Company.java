@@ -56,19 +56,23 @@ public class Company implements Subject{
     }
 
     public void move(Departament source, Departament destination) {
-        for (Employee employee : source.employees) {
-            destination.add(employee);
-            source.remove(employee);
+        if (destination != null) {
+            for (Employee employee : source.employees) {
+                destination.add(employee);
+                source.remove(employee);
+            }
+            for (Job job : source.jobs) {
+                destination.add(job);
+            }
+            remove(destination);
         }
-        for (Job job : source.jobs) {
-            destination.add(job);
-        }
-        remove(destination);
     }
 
     public void move(Employee employee, Departament newDepartment) {
-        remove(employee);
-        newDepartment.add(employee);
+        if ( newDepartment != null) {
+            remove(employee);
+            newDepartment.add(employee);
+        }
     }
 
     public boolean contains(Departament departament) {

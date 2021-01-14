@@ -61,6 +61,7 @@ public class GUIInterface extends JFrame {
     private JTextField TextAdminMove;
     private JTextField Text2AdminMove;
     private JButton ButtonAdminMove;
+    private Employee SelectedEmployee;
 
     public GUIInterface(String titlu) {
         super(titlu);
@@ -261,7 +262,7 @@ public class GUIInterface extends JFrame {
         jTabbedPaneCompany.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(jTabbedPaneCompany.getSelectedIndex() == 1){
+                if (jTabbedPaneCompany.getSelectedIndex() == 1) {
                     Text2AdminMove.setEnabled(true);
                     TextAdminMove.setEnabled(true);
                     ButtonAdminMove.setEnabled(true);
@@ -289,13 +290,17 @@ public class GUIInterface extends JFrame {
         TextAdminMove.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                TextAdminMove.setText("");
+                if ( TextAdminMove.isEnabled()) {
+                    TextAdminMove.setText("");
+                }
                 super.mouseClicked(e);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                TextAdminMove.setText("");
+                if ( TextAdminMove.isEnabled()) {
+                    TextAdminMove.setText("");
+                }
                 super.mousePressed(e);
             }
         });
@@ -303,14 +308,47 @@ public class GUIInterface extends JFrame {
         Text2AdminMove.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Text2AdminMove.setText("");
+                if ( Text2AdminMove.isEnabled()) {
+                    Text2AdminMove.setText("");
+                }
                 super.mouseClicked(e);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                Text2AdminMove.setText("");
+                if ( Text2AdminMove.isEnabled()) {
+                    Text2AdminMove.setText("");
+                }
                 super.mousePressed(e);
+            }
+        });
+
+        ButtonAdminMove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (SelectedEmployee != null) {
+                    String companySelected = TextAdminMove.getText();
+                    String departmentSelected = Text2AdminMove.getText();
+
+                    Application application = Application.getInstance();
+                    if (application.getCompany(companySelected) != null) {
+                        Company company = application.getCompany(companySelected);
+                        for(Departament departament : company.departaments){
+                            if ( departament.getType().compareTo(departmentSelected) == 0){
+                                if ( company.contains(SelectedEmployee)) {
+                                    company.move(SelectedEmployee, departament);
+                                }else {
+                                    company.add(SelectedEmployee, departament);
+                                    application.getCompany(SelectedEmployee.company).remove(SelectedEmployee);
+                                }
+                                CompanyChoosedPageCreation();
+                                setVisible(true);
+                                pack();
+                            }
+                        }
+
+                    }
+                }
             }
         });
 
@@ -431,6 +469,7 @@ public class GUIInterface extends JFrame {
                                                 public void actionPerformed(ActionEvent e) {
                                                     EmployeeInfo.removeAll();
                                                     EmployeeInfo.setLayout(new GridBagLayout());
+                                                    SelectedEmployee = employee;
 
                                                     GridBagConstraints constraints2 = new GridBagConstraints();
                                                     constraints2.weightx = 0;
@@ -800,7 +839,6 @@ public class GUIInterface extends JFrame {
                                                             JScrollPane jScrollPane7 = new JScrollPane(jTable7);
                                                             jScrollPane7.setPreferredSize(new Dimension(jTable7.getWidth(), 3 * 20));
                                                             JobsPanel.add(jScrollPane7, JobConstraints2);
-
                                                         }
                                                         JobConstraints2.weightx = 1;
                                                         JobConstraints2.weighty = 1;
