@@ -1,5 +1,7 @@
 package com.TEMA;
 
+import java.util.ArrayList;
+
 public class Notification {
     NotificationType notificationType;
     Company company;

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class User extends Consumer implements Observer{
     List<String> companies;
+    ArrayList<Notification> notifications = new ArrayList<>();
 
     public User(ArrayList<Consumer> consumers, Resume cv, List<String> companies, int Code) {
         super(consumers, cv, Code);
@@ -49,6 +50,7 @@ public class User extends Consumer implements Observer{
     @Override
     public void update(Notification notification) {
         notification.user = this;
+        notifications.add(notification);
         notification.sendNotification();
     }
 

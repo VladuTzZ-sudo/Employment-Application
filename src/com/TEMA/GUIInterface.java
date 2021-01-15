@@ -3,12 +3,12 @@ package com.TEMA;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TreeSet;
 
@@ -20,7 +20,6 @@ public class GUIInterface extends JFrame {
     private JButton managerPageButton;
     private JButton profilePageButton;
     private JPanel LeftCompanyPanel;
-    private JButton BackFromCompanyChoosedPage;
     private JButton backButton2;
     private JPanel MainPage;
     private JButton ButtonSearchUsersProfile;
@@ -37,13 +36,21 @@ public class GUIInterface extends JFrame {
     private JPanel UserChoosedPage;
     private JButton backfromUserChoosedPage;
     private JSplitPane SplitUsersAdmin;
-    private JPanel UsersList;
+    private JPanel LogIn;
+    private JButton LogUserButton;
+    private JButton LogAdminButton;
+    private JButton LogManagerButton;
+    private JSplitPane SplitLogin;
+    private JSplitPane NotificationSplit;
+    private JButton BackfromNotification;
+    private JScrollPane NotificScroll;
+    private JPanel NotificationPanel;
+    private JButton Logout;
     private String companyName = null;
     private JPanel Requests;
     private JPanel UserRequest;
     private JPanel JobRequest;
     private JTabbedPane jTabbedPane;
-    private JScrollPane jScrollPaneForRequest;
     private JButton AcceptButton;
     private JButton CancelButton;
     private boolean resizable = false;
@@ -51,45 +58,88 @@ public class GUIInterface extends JFrame {
     private User userfromList;
     private JPanel UserInfo;
     private JSplitPane splitPaneCompany;
-    private ArrayList<JButtonCompany> jButtonCompanies = new ArrayList<>();
+    private final ArrayList<JButtonCompany> jButtonCompanies = new ArrayList<>();
     private JTabbedPane jTabbedPaneCompany;
-    private JPanel EmployeesPanel = new JPanel();
-    private JPanel JobsPanel = new JPanel();
-    private JPanel EmployeeInfo = new JPanel();
-    private JPanel newEmployee = new JPanel();
-    private JScrollPane newEmployeeScroll = new JScrollPane(newEmployee);
-    private JScrollPane EmployeesScroll = new JScrollPane(EmployeesPanel);
-    private JScrollPane JobsScroll = new JScrollPane(JobsPanel);
-    private JScrollPane EmplScroll = new JScrollPane(EmployeeInfo);
-    private JScrollPane jScrollPane1;
-    private JSplitPane SplitAdminMove;
-    private JPanel AdminMove;
+    private final JPanel EmployeesPanel = new JPanel();
+    private final JPanel JobsPanel = new JPanel();
+    private final JPanel EmployeeInfo = new JPanel();
+    private final JPanel newEmployee = new JPanel();
+    private final JScrollPane newEmployeeScroll = new JScrollPane(newEmployee);
+    private final JScrollPane EmployeesScroll = new JScrollPane(EmployeesPanel);
+    private final JScrollPane JobsScroll = new JScrollPane(JobsPanel);
+    private final JScrollPane EmplScroll = new JScrollPane(EmployeeInfo);
     private JTextField TextAdminMove;
     private JTextField Text2AdminMove;
     private JButton ButtonAdminMove;
     private Employee SelectedEmployee;
-    private JSplitPane SplitSalaryAdmin;
-    private JPanel SalaryPanelAdmin;
     private JTextField SalaryText;
     private JButton SalaryCalculate;
     private Departament departamentSelected;
     private JButtonDepartment jButtonDepartmentForAddEmployee;
+    private final JPanel RecruitersPanel = new JPanel();
+    private final JScrollPane RecrutersScrollPane = new JScrollPane(RecruitersPanel);
+    private final JPanel UserLogin = new JPanel();
+    private final JPanel ManagerLogin = new JPanel();
+    private final JPanel AdminLogin = new JPanel();
+    private JPanel UserMainPage;
+    private LoginPanel Login;
+    boolean intrat, intrat2;
+    private User userLog;
+    private Employee employeeLog;
+    private Manager Manager;
+    private int ManagerType = 0;
 
     public GUIInterface(String titlu) {
         super(titlu);
-        this.setContentPane(HomePage);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 600));
         adminPageButton.setPreferredSize(new Dimension(300, 150));
         managerPageButton.setPreferredSize(new Dimension(300, 150));
         profilePageButton.setPreferredSize(new Dimension(300, 150));
 
-        setVisible(true);
-        pack();
         profilePageButton.setFocusable(false);
         adminPageButton.setFocusable(false);
         managerPageButton.setFocusable(false);
         BackFromUserOrCompany.setFocusable(false);
+
+        JPanel mainLogin = new JPanel();
+        mainLogin.setBackground(new Color(27, 70, 75));
+        UserLogin.setBackground(new Color(27, 70, 75));
+        AdminLogin.setBackground(new Color(27, 70, 75));
+        ManagerLogin.setBackground(new Color(27, 70, 75));
+        HomePage.setBackground(new Color(27, 70, 75));
+
+        SplitLogin.setEnabled(false);
+        SplitLogin.setDividerLocation(51);
+        SplitLogin.setRightComponent(mainLogin);
+        mainLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
+
+        LogUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SplitLogin.setRightComponent(UserLogin);
+                UserLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
+                UserLoginCreatePanel();
+            }
+        });
+
+        LogAdminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminLoginCreatePanel();
+                SplitLogin.setRightComponent(AdminLogin);
+                //AdminLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
+            }
+        });
+
+        LogManagerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SplitLogin.setRightComponent(ManagerLogin);
+                ManagerLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
+                ManagerLoginCreatePanel();
+            }
+        });
 
         profilePageButton.addActionListener(new ActionListener() {
             @Override
@@ -99,6 +149,7 @@ public class GUIInterface extends JFrame {
                 pack();
             }
         });
+
         adminPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,6 +159,7 @@ public class GUIInterface extends JFrame {
                 pack();
             }
         });
+
         managerPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -173,7 +225,7 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        BackFromUserOrCompany.addActionListener(new ActionListener() {            //dateDespreUtilizatorButton jpanel de alegere adminpage - user-company - de inapoi.
+        BackFromUserOrCompany.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setContentPane(HomePage);
@@ -211,19 +263,394 @@ public class GUIInterface extends JFrame {
                 ButtonSearchAction();
             }
         });
+
+        this.setContentPane(SplitLogin);
+        setVisible(true);
+        pack();
+        BackfromNotification.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(UserMainPage);
+                UserMainPage.setVisible(true);
+                pack();
+            }
+        });
+
+        Logout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(SplitLogin);
+                SplitLogin.setVisible(true);
+                pack();
+            }
+        });
+    }
+
+    public void AdminLoginCreatePanel() {
+        AdminLogin.removeAll();
+        LoginPanel Login = new LoginPanel("Admin", "admin", "admin");
+        Login.setPreferredSize(new Dimension(525, 200));
+        Login.setVisible(true);
+
+        AdminLogin.setLayout(new GridBagLayout());
+        AdminLogin.add(Login);
+
+        Login.login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (Login.username.getText().compareTo("admin") == 0 && Login.password.getText().compareTo("admin") == 0) {
+                    setContentPane(HomePage);
+                    adminPageButton.setEnabled(true);
+                    HomePage.setVisible(true);
+                    ManagerType = 2;
+                    pack();
+                } else {
+                    Login.username.setText("");
+                    Login.password.setText("");
+                    JFrame f = new JFrame();
+                    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    JDialog d = new JDialog(f, "Input data are wrong", true);
+                    d.setLayout(new FlowLayout());
+                    d.add(new JLabel("Username or password are wrong."));
+                    d.setSize(500, 150);
+                    d.setVisible(true);
+                    pack();
+                }
+            }
+        });
+        AdminLogin.setVisible(true);
+        pack();
+    }
+
+    public void ManagerLoginCreatePanel() {
+        ManagerLogin.removeAll();
+        LoginPanel Login = new LoginPanel("Manager", "Google", "Google");
+        Login.setPreferredSize(new Dimension(525, 200));
+        Login.setVisible(true);
+
+        ManagerLogin.setLayout(new GridBagLayout());
+        ManagerLogin.add(Login);
+
+        Login.login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ManagerType = 0;
+                for (Company company : Application.getInstance().Companies) {
+                    if (Login.username.getText().compareTo(company.name) == 0 && Login.password.getText().compareTo(company.name) == 0) {
+                        adminPageButton.setEnabled(false);
+                        setContentPane(HomePage);
+                        HomePage.setVisible(true);
+                        pack();
+                        Manager = company.manager;
+                        ManagerType = 1;
+                    }
+                }
+                if (ManagerType != 1){
+                        Login.username.setText("");
+                        Login.password.setText("");
+                        JFrame f = new JFrame();
+                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        JDialog d = new JDialog(f, "Input data are wrong", true);
+                        d.setLayout(new FlowLayout());
+                        d.add(new JLabel("Username or password are wrong."));
+                        d.setSize(500, 150);
+                        d.setVisible(true);
+                        pack();
+                }
+            }
+        });
+        ManagerLogin.setVisible(true);
+        pack();
+    }
+
+    public void UserLoginCreatePanel() {
+        UserLogin.removeAll();
+        Login = new LoginPanel("User", "dedmund@gmail.com", "male");
+        Login.setPreferredSize(new Dimension(525, 200));
+        Login.setVisible(true);
+
+        UserLogin.setLayout(new GridBagLayout());
+        UserLogin.add(Login);
+
+        Login.login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                intrat = false;
+                for (User user : Application.getInstance().Users) {
+                    if (Login.username.getText().compareTo(user.cv.information.getEmail()) == 0
+                            && Login.password.getText().compareTo(user.cv.information.getSex()) == 0) {
+                        userLog = user;
+                        UserMainPageCreation();
+                        setContentPane(UserMainPage);
+                        UserMainPage.setVisible(true);
+                        pack();
+                        intrat = true;
+                        break;
+                    }
+                }
+                if (!intrat) {
+                    intrat2 = false;
+                    for (Company company : Application.getInstance().Companies) {
+                        for (Departament departament : company.departaments) {
+                            for (Employee employee : departament.getEmployees()) {
+                                if (Login.username.getText().compareTo(employee.cv.information.getEmail()) == 0
+                                        && Login.password.getText().compareTo(employee.cv.information.getSex()) == 0) {
+                                    employeeLog = employee;
+                                    UserMainPageCreation();
+                                    setContentPane(UserMainPage);
+                                    UserMainPage.setVisible(true);
+                                    pack();
+                                    intrat2 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (intrat2) {
+                            break;
+                        }
+                    }
+                    if (!intrat2) {
+                        Login.username.setText("");
+                        Login.password.setText("");
+                        JFrame f = new JFrame();
+                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        JDialog d = new JDialog(f, "Input data are wrong", true);
+                        d.setLayout(new FlowLayout());
+                        d.add(new JLabel("Username or password are wrong."));
+                        d.setSize(500, 150);
+                        d.setVisible(true);
+                        pack();
+                    }
+                }
+            }
+        });
+        UserLogin.setVisible(true);
+        pack();
+    }
+
+    public void UserMainPageCreation() {
+        UserMainPage = new JPanel();
+        UserMainPage.setLayout(new GridBagLayout());
+        UserMainPage.setBackground(new Color(27, 70, 75));
+
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new GridBagLayout());
+        jPanel.add(profilePageButton);
+        JButton NotificationButton = new JButton("Notifications");
+        NotificationButton.setBackground(new Color(29, 29, 29));
+        NotificationButton.setForeground(new Color(30, 11, 50));
+        NotificationButton.setPreferredSize(new Dimension(300, 150));
+        jPanel.add(NotificationButton);
+        NotificationButton.setFocusable(false);
+
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 0;
+        gridBagConstraints.weighty = 0;
+
+        UserMainPage.add(jPanel, gridBagConstraints);
+        JButton Logout2 = new JButton("Logout");
+        Logout2.setPreferredSize(new Dimension(200, 30));
+        Logout2.setEnabled(true);
+        Logout2.setFocusable(false);
+        gridBagConstraints.gridy++;
+
+        UserMainPage.add(Logout2, gridBagConstraints);
+
+        JButton Friends = new JButton("Friends");
+        Friends.setPreferredSize(new Dimension(200, 30));
+        Friends.setEnabled(true);
+        Friends.setFocusable(false);
+        gridBagConstraints.gridy++;
+        UserMainPage.add(Friends, gridBagConstraints);
+
+        Logout2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(SplitLogin);
+                pack();
+            }
+        });
+
+        //JButton backButtonProfile = new JButton("mama");
+        backButton2.removeActionListener(Arrays.stream(backButton2.getActionListeners()).findFirst().get());
+        backButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setContentPane(UserMainPage);
+                setVisible(true);
+                pack();
+            }
+        });
+
+        NotificationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                NotificationPanelCreation();
+                setContentPane(NotificationSplit);
+                pack();
+            }
+        });
+
+        Friends.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JSplitPane FriendsPanel = new JSplitPane();
+
+                FriendsPanel.setEnabled(false);
+                FriendsPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+
+                JButton backButtonFromFriends = new JButton("Back");
+                backButtonFromFriends.setPreferredSize(new Dimension(FriendsPanel.getLeftComponent().getWidth(), FriendsPanel.getLeftComponent().getHeight()));
+
+                backButtonFromFriends.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        setContentPane(UserMainPage);
+                        UserMainPage.setVisible(true);
+                        pack();
+                    }
+                });
+
+                JPanel FriendsList = new JPanel();
+                JScrollPane FriendsScrollPanel = new JScrollPane(FriendsList);
+
+                FriendsList.setLayout(new GridBagLayout());
+                GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+                gridBagConstraints1.gridy = 0;
+                gridBagConstraints1.gridx = 0;
+                gridBagConstraints.weightx = 0;
+                gridBagConstraints1.weighty = 0;
+                gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = GridBagConstraints.NORTH;
+
+                if ( intrat ) {
+                    for (Consumer consumer1 : userLog.consumers) {
+                        JButton nume = new JButton(consumer1.cv.information.getNume()+ " " + consumer1.cv.information.getPrenume());
+                        nume.setBackground(Color.GREEN);
+                        nume.setPreferredSize(new Dimension(FriendsList.getWidth(), 50));
+                        nume.setEnabled(true);
+                        nume.setFocusable(false);
+                        FriendsList.add(nume,gridBagConstraints1);
+                        gridBagConstraints1.gridy++;
+                    }
+                } else {
+                    for (Consumer consumer1: employeeLog.consumers){
+                        JButton nume = new JButton(consumer1.cv.information.getNume()+ " " + consumer1.cv.information.getPrenume());
+                        nume.setBackground(Color.CYAN);
+                        nume.setPreferredSize(new Dimension(FriendsList.getWidth(), 50));
+                        nume.setEnabled(true);
+                        nume.setFocusable(false);
+                        FriendsList.add(nume,gridBagConstraints1);
+                        gridBagConstraints1.gridy++;
+                    }
+                }
+
+                gridBagConstraints1.weighty =1;
+                gridBagConstraints1.weightx =1;
+                FriendsList.add(new JLabel(""), gridBagConstraints1);
+
+                FriendsPanel.setLeftComponent(backButtonFromFriends);
+                FriendsPanel.setRightComponent(FriendsScrollPanel);
+                setContentPane(FriendsPanel);
+                pack();
+            }
+        });
+    }
+
+    public void NotificationPanelCreation() {
+        NotificationPanel.removeAll();
+        NotificScroll.setPreferredSize(new Dimension(NotificationSplit.getRightComponent().getWidth(), NotificationSplit.getRightComponent().getHeight()));
+        NotificationPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.weighty = 0;
+        gridBagConstraints.weightx = 0;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = GridBagConstraints.NORTH;
+
+        Application application = Application.getInstance();
+        if (intrat) {
+            for (Notification notification : userLog.notifications) {
+                JButton NotiType = new JButton(notification.notificationType.toString());
+                NotiType.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 25));
+                NotiType.setEnabled(true);
+                NotiType.setFocusable(false);
+                NotiType.setBackground(Color.BLACK);
+                NotificationPanel.add(NotiType, gridBagConstraints);
+                gridBagConstraints.gridy++;
+
+                JButton NotiCompany, NotiJob;
+                NotiCompany = new JButton("Company: " + notification.company.name);
+                NotiJob = new JButton("Job: " + notification.job.name);
+
+                NotiCompany.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 50));
+                NotiCompany.setEnabled(true);
+                NotiCompany.setFocusable(false);
+                NotiCompany.setBackground(Color.RED);
+
+                NotiJob.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 50));
+                NotiJob.setEnabled(true);
+                NotiJob.setFocusable(false);
+                NotiJob.setBackground(Color.ORANGE);
+
+                NotificationPanel.add(NotiCompany, gridBagConstraints);
+                gridBagConstraints.gridy++;
+                NotificationPanel.add(NotiJob, gridBagConstraints);
+                gridBagConstraints.gridy++;
+
+                NotificationPanel.add(new JTextField(""), gridBagConstraints);
+                gridBagConstraints.gridy++;
+            }
+        } else {
+            for (Company company : Application.getInstance().Companies) {
+                for (Departament departament : company.departaments) {
+                    for (Employee employee : departament.getEmployees()) {
+                        if (Login.username.getText().compareTo(employee.cv.information.getEmail()) == 0
+                                && Login.password.getText().compareTo(employee.cv.information.getSex()) == 0) {
+                            JButton jButton = new JButton("This is an Employee!");
+                            jButton.setBackground(Color.BLACK);
+                            jButton.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 50));
+                            jButton.setEnabled(true);
+                            jButton.setFocusable(false);
+                            NotificationPanel.add(jButton, gridBagConstraints);
+                            gridBagConstraints.gridy++;
+                            System.out.println(employee.cv.information.getNume());
+                            JButton NotiCompany;
+                            NotiCompany = new JButton("Company: " + employee.company);
+
+                            NotiCompany.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 50));
+                            NotiCompany.setEnabled(true);
+                            NotiCompany.setFocusable(false);
+                            NotiCompany.setBackground(Color.RED);
+
+                            NotificationPanel.add(NotiCompany, gridBagConstraints);
+                            gridBagConstraints.gridy++;
+                        }
+                    }
+                }
+            }
+        }
+
+        gridBagConstraints.weighty = 1;
+        gridBagConstraints.weightx = 1;
+        NotificationPanel.add(new JLabel(""), gridBagConstraints);
     }
 
     public void CompanyChoosedPageCreation() {
         JSplitPane CompanyChoosedPage = new JSplitPane();
         CompanyChoosedPage.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        BackFromCompanyChoosedPage = new JButton("Back");
-        BackFromCompanyChoosedPage.setBackground(Color.BLACK);
-        BackFromCompanyChoosedPage.setEnabled(true);
-        BackFromCompanyChoosedPage.setPreferredSize(new Dimension(CompanyChoosedPage.getWidth(), 50));
-        CompanyChoosedPage.setLeftComponent(BackFromCompanyChoosedPage);
+        JButton backFromCompanyChoosedPage = new JButton("Back");
+        backFromCompanyChoosedPage.setBackground(Color.BLACK);
+        backFromCompanyChoosedPage.setEnabled(true);
+        backFromCompanyChoosedPage.setPreferredSize(new Dimension(CompanyChoosedPage.getWidth(), 50));
+        CompanyChoosedPage.setLeftComponent(backFromCompanyChoosedPage);
         CompanyChoosedPage.setEnabled(false);
 
-        BackFromCompanyChoosedPage.addActionListener(new ActionListener() {
+        backFromCompanyChoosedPage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setContentPane(UserOrCompany);
@@ -253,19 +680,24 @@ public class GUIInterface extends JFrame {
         EmplScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         JobsScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         JobsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        RecrutersScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        RecrutersScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         EmployeesPanel.removeAll();
         EmployeeInfo.removeAll();
         JobsPanel.removeAll();
         newEmployee.removeAll();
+        RecruitersPanel.removeAll();
         jTabbedPaneCompany.add("Employees", EmployeesScroll);
         jTabbedPaneCompany.add("Employee Info", EmplScroll);
         jTabbedPaneCompany.add("Jobs", JobsScroll);
+        jTabbedPaneCompany.add("Recruiters", RecrutersScrollPane);
         jTabbedPaneCompany.add("Add Employee", newEmployeeScroll);
         newEmployee.setVisible(false);
         EmployeesScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         EmplScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         JobsScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         newEmployeeScroll.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
+        RecrutersScrollPane.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
         LeftCompanyPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0;
@@ -290,18 +722,18 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        SplitAdminMove = new JSplitPane();
-        AdminMove = new JPanel();
+        JSplitPane splitAdminMove = new JSplitPane();
+        JPanel adminMove = new JPanel();
         TextAdminMove = new JTextField("Type Company");
         Text2AdminMove = new JTextField("Type Department");
         ButtonAdminMove = new JButton("Move Employee");
-        AdminMove.setLayout(new GridLayout());
+        adminMove.setLayout(new GridLayout());
         Text2AdminMove.setEnabled(false);
         TextAdminMove.setEnabled(false);
         ButtonAdminMove.setEnabled(false);
-        AdminMove.add(TextAdminMove);
-        AdminMove.add(Text2AdminMove);
-        AdminMove.add(ButtonAdminMove);
+        adminMove.add(TextAdminMove);
+        adminMove.add(Text2AdminMove);
+        adminMove.add(ButtonAdminMove);
 
         TextAdminMove.addMouseListener(new MouseAdapter() {
             @Override
@@ -364,17 +796,17 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        SplitAdminMove.setLeftComponent(AdminMove);
-        SplitAdminMove.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        SplitAdminMove.setEnabled(false);
+        splitAdminMove.setLeftComponent(adminMove);
+        splitAdminMove.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitAdminMove.setEnabled(false);
 
-        SplitSalaryAdmin = new JSplitPane();
-        SplitSalaryAdmin.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        SplitSalaryAdmin.setEnabled(false);
-        SplitSalaryAdmin.setRightComponent(SplitAdminMove);
+        JSplitPane splitSalaryAdmin = new JSplitPane();
+        splitSalaryAdmin.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitSalaryAdmin.setEnabled(false);
+        splitSalaryAdmin.setRightComponent(splitAdminMove);
 
-        SalaryPanelAdmin = new JPanel();
-        SalaryPanelAdmin.setLayout(new GridLayout());
+        JPanel salaryPanelAdmin = new JPanel();
+        salaryPanelAdmin.setLayout(new GridLayout());
 
         SalaryText = new JTextField("The salary budget of the department is...");
         SalaryText.setEditable(false);
@@ -391,12 +823,12 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        SalaryPanelAdmin.add(SalaryText);
-        SalaryPanelAdmin.add(SalaryCalculate);
+        salaryPanelAdmin.add(SalaryText);
+        salaryPanelAdmin.add(SalaryCalculate);
 
-        SplitSalaryAdmin.setLeftComponent(SalaryPanelAdmin);
-        SplitAdminMove.setRightComponent(jTabbedPaneCompany);
-        splitPaneCompany.setRightComponent(SplitSalaryAdmin);
+        splitSalaryAdmin.setLeftComponent(salaryPanelAdmin);
+        splitAdminMove.setRightComponent(jTabbedPaneCompany);
+        splitPaneCompany.setRightComponent(splitSalaryAdmin);
 
         int contor = 0;
         JButton Alege = new JButton("Choose a company");
@@ -441,6 +873,7 @@ public class GUIInterface extends JFrame {
                     Alege2.setBackground(Color.BLACK);
                     contor1++;
                     jPanel.add(Alege, constraints1);
+                    //ArrayList<Recruiter> recruiterArrayList = new ArrayList<>();
 
                     for (Company company1 : application.Companies) {
                         JButtonCompany jButton11 = new JButtonCompany(company1, company1.name);
@@ -461,14 +894,17 @@ public class GUIInterface extends JFrame {
                                     Alege.setPreferredSize(new Dimension(LeftCompanyPanel.getWidth(), 25));
                                     Alege.setBackground(Color.BLACK);
                                     SalaryCalculate.setEnabled(false);
+
                                     SalaryText.setText("The salary budget of the department is...");
                                     constraints.gridy = 0;
                                     constraints.weighty = 0;
                                     constraints.weightx = 0;
                                     LeftCompanyPanel.add(Alege, constraints);
 
+                                    //recruiterArrayList.clear();
                                     EmployeeInfo.removeAll();
                                     EmployeesPanel.removeAll();
+                                    RecruitersPanel.removeAll();
                                     JobsPanel.removeAll();
                                     newEmployee.removeAll();
                                     LeftCompanyPanel.setVisible(true);
@@ -476,6 +912,230 @@ public class GUIInterface extends JFrame {
                                     pack();
                                 }
                             });
+
+                            RecruitersPanel.setLayout(new GridBagLayout());
+                            GridBagConstraints recruiterConstraints = new GridBagConstraints();
+                            recruiterConstraints.gridy = 0;
+                            recruiterConstraints.gridx = 0;
+                            recruiterConstraints.weightx = 0;
+                            recruiterConstraints.weighty = 0;
+                            recruiterConstraints.fill = GridBagConstraints.HORIZONTAL;
+                            recruiterConstraints.anchor = GridBagConstraints.NORTH;
+                            int contorRecruiter = 0;
+
+                            for (Recruiter recruiter : company1.recruiters) {
+                                JButton score = new JButton(String.valueOf(recruiter.rating));
+                                score.setPreferredSize(new Dimension(RecruitersPanel.getWidth(), 25));
+                                score.setEnabled(true);
+                                score.setFocusable(false);
+                                score.setBackground(Color.ORANGE);
+                                recruiterConstraints.gridy = contorRecruiter;
+                                RecruitersPanel.add(score, recruiterConstraints);
+                                contorRecruiter++;
+
+                                JButton nameRecruiter = new JButton(recruiter.cv.information.getNume() + " " + recruiter.cv.information.getPrenume());
+                                nameRecruiter.setPreferredSize(new Dimension(RecruitersPanel.getWidth(), 50));
+                                nameRecruiter.setEnabled(true);
+                                nameRecruiter.setFocusable(false);
+                                nameRecruiter.setBackground(Color.BLACK);
+                                recruiterConstraints.gridy = contorRecruiter;
+                                RecruitersPanel.add(nameRecruiter, recruiterConstraints);
+                                contorRecruiter++;
+
+                                recruiterConstraints.gridy = contorRecruiter;
+                                JLabel jLabel = new JLabel("");
+                                jLabel.setPreferredSize(new Dimension(RecruitersPanel.getWidth(), 20));
+                                RecruitersPanel.add(jLabel, recruiterConstraints);
+                                contorRecruiter++;
+                            }
+
+                            recruiterConstraints.weighty = 1;
+                            recruiterConstraints.weightx = 1;
+                            recruiterConstraints.gridy = contorRecruiter;
+                            RecruitersPanel.add(new JLabel(""), recruiterConstraints);
+
+                            newEmployee.setLayout(new CardLayout());
+                            JButton jLabelNewEmployee = new JButton("Choose a department");
+                            jLabelNewEmployee.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                            newEmployee.add(jLabelNewEmployee);
+                            newEmployee.setVisible(true);
+
+                            GridBagLayout JobLayout = new GridBagLayout();
+                            GridBagConstraints JobConstraints2 = new GridBagConstraints();
+                            JobsPanel.setLayout(JobLayout);
+                            JobConstraints2.fill = GridBagConstraints.HORIZONTAL;
+                            JobConstraints2.gridx = 0;
+                            JobConstraints2.weighty = 0;
+                            JobConstraints2.weightx = 0;
+                            JobConstraints2.anchor = GridBagConstraints.NORTH;
+                            int contorJob = 0;
+                            JobsPanel.removeAll();
+                            String[] column7 = new String[]{"About", "Date"};
+                            for (Job job : jButtonCompany.company.getJobs()) {
+                                JButton NameJob = new JButton(String.valueOf(job.name));
+                                NameJob.setEnabled(true);
+                                NameJob.setFocusable(false);
+                                NameJob.setPreferredSize(new Dimension(JobsPanel.getWidth(), 50));
+                                NameJob.setForeground(Color.BLACK);
+                                //NameJob.setBackground(Color.GREEN);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(NameJob, JobConstraints2);
+
+                                JButton NameCompany = new JButton(String.valueOf(job.company));
+                                NameCompany.setEnabled(true);
+                                NameCompany.setFocusable(false);
+                                NameCompany.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                NameCompany.setForeground(Color.BLACK);
+                                NameCompany.setBackground(Color.YELLOW);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(NameCompany, JobConstraints2);
+
+                                JButton Salariu = new JButton("Salariu");
+                                Salariu.setEnabled(true);
+                                Salariu.setFocusable(false);
+                                Salariu.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                Salariu.setForeground(Color.BLACK);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(Salariu, JobConstraints2);
+
+                                JButton Money = new JButton(String.valueOf(Double.valueOf(job.salary)));
+                                Money.setEnabled(true);
+                                Money.setFocusable(false);
+                                Money.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                Money.setForeground(Color.BLACK);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(Money, JobConstraints2);
+
+                                JButton AnAbsolvire = new JButton("CONSTRANGERE AN ABSOLVIRE");
+                                AnAbsolvire.setEnabled(true);
+                                AnAbsolvire.setFocusable(false);
+                                AnAbsolvire.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                AnAbsolvire.setForeground(Color.BLACK);
+                                AnAbsolvire.setBackground(Color.RED);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(AnAbsolvire, JobConstraints2);
+
+                                String[][] data1 = {{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
+                                        {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
+                                if (job.anAbsolvire.inferior == -1) {
+                                    data1 = new String[][]{{"An minim", "null"},
+                                            {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
+                                }
+                                if (job.anAbsolvire.superior == 3000) {
+                                    data1 = new String[][]{{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
+                                            {"An maxim", "null"}};
+                                }
+                                if (job.anAbsolvire.inferior == -1 && job.anAbsolvire.superior == 3000) {
+                                    data1 = new String[][]{{"An minim", "null"},
+                                            {"An maxim", "null"}};
+                                }
+
+                                JTable jTableJob = new JTable(data1, column7);
+                                jTableJob.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                jTableJob.setEnabled(false);
+                                jTableJob.setFocusable(false);
+
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                jTableJob.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTableJob.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTableJob.setFillsViewportHeight(false);
+                                JScrollPane jScrollPaneJobs = new JScrollPane(jTableJob);
+                                jScrollPaneJobs.setPreferredSize(new Dimension(jTableJob.getWidth(), 3 * 20));
+                                JobsPanel.add(jScrollPaneJobs, JobConstraints2);
+
+                                JButton AniExperienta = new JButton("CONSTRANGERE EXPERIENTA");
+                                AniExperienta.setEnabled(true);
+                                AniExperienta.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                AniExperienta.setForeground(Color.BLACK);
+                                AniExperienta.setBackground(Color.ORANGE);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(AniExperienta, JobConstraints2);
+
+                                String[][] data6 = {{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
+                                        {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
+                                if (job.aniExperienta.inferior == -1) {
+                                    data6 = new String[][]{{"Experienta minima", "null"},
+                                            {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
+                                }
+                                if (job.aniExperienta.superior == 3000) {
+                                    data6 = new String[][]{{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
+                                            {"Experienta maxima", "null"}};
+                                }
+                                if (job.aniExperienta.inferior == -1 && job.aniExperienta.superior == 3000) {
+                                    data6 = new String[][]{{"Experienta minima", "null"},
+                                            {"Experienta maxima", "null"}};
+                                }
+
+                                JTable jTable6 = new JTable(data6, column7);
+                                jTable6.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                jTable6.setEnabled(false);
+                                jTable6.setFocusable(false);
+
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                jTable6.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTable6.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTable6.setFillsViewportHeight(false);
+                                JScrollPane jScrollPane6 = new JScrollPane(jTable6);
+                                jScrollPane6.setPreferredSize(new Dimension(jTable6.getWidth(), 3 * 20));
+                                JobsPanel.add(jScrollPane6, JobConstraints2);
+
+                                JButton MedieNecesara = new JButton("CONSTRANGERE MEDIE");
+                                MedieNecesara.setEnabled(true);
+                                MedieNecesara.setFocusable(false);
+                                MedieNecesara.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
+                                MedieNecesara.setForeground(Color.BLACK);
+                                MedieNecesara.setBackground(Color.BLUE);
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                JobsPanel.add(MedieNecesara, JobConstraints2);
+
+                                String[][] data7 = {{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
+                                        {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
+                                if (job.medieAcademica.inferior == -1) {
+                                    data7 = new String[][]{{"Medie minima", "null"},
+                                            {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
+                                }
+                                if (job.medieAcademica.superior == 3000) {
+                                    data7 = new String[][]{{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
+                                            {"Medie maxima", "null"}};
+                                }
+                                if (job.medieAcademica.inferior == -1 && job.medieAcademica.superior == 3000) {
+                                    data7 = new String[][]{{"Medie minima", "null"},
+                                            {"Medie maxima", "null"}};
+                                }
+
+                                JTable jTable7 = new JTable(data7, column7);
+                                jTable7.setSize(new Dimension(JobsPanel.getWidth(), 50));
+                                jTable7.setEnabled(false);
+                                jTable7.setFocusable(false);
+
+                                JobConstraints2.gridy = contorJob;
+                                contorJob++;
+                                jTable7.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTable7.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
+                                jTable7.setFillsViewportHeight(false);
+                                JScrollPane jScrollPane7 = new JScrollPane(jTable7);
+                                jScrollPane7.setPreferredSize(new Dimension(jTable7.getWidth(), 3 * 20));
+                                JobsPanel.add(jScrollPane7, JobConstraints2);
+                            }
+                            JobConstraints2.weightx = 1;
+                            JobConstraints2.weighty = 1;
+                            JobConstraints2.gridy = contorJob;
+                            JobsPanel.add(new JLabel(" "), JobConstraints2);
+                            JobsPanel.setVisible(true);
+
+                            EmployeesPanel.removeAll();
+                            EmployeesPanel.setVisible(true);
+
+                            pack();
 
                             for (Departament departament : jButtonCompany.company.departaments) {
                                 JButtonDepartment jButtonDepartment = new JButtonDepartment(departament, departament.getType());
@@ -493,6 +1153,7 @@ public class GUIInterface extends JFrame {
                                         SalaryCalculate.setEnabled(true);
                                         departamentSelected = departament;
                                         jButtonDepartmentForAddEmployee = jButtonDepartment;
+
                                         GridBagConstraints bagConstraints = new GridBagConstraints();
                                         bagConstraints.gridy = 0;
                                         bagConstraints.gridx = 0;
@@ -728,176 +1389,6 @@ public class GUIInterface extends JFrame {
                                                         }
                                                         EmployeeInfo.add(jScrollPane4, constraints2);
 
-                                                        GridBagLayout JobLayout = new GridBagLayout();
-                                                        GridBagConstraints JobConstraints2 = new GridBagConstraints();
-                                                        JobsPanel.setLayout(JobLayout);
-                                                        JobConstraints2.fill = GridBagConstraints.HORIZONTAL;
-                                                        JobConstraints2.gridx = 0;
-                                                        JobConstraints2.weighty = 0;
-                                                        JobConstraints2.weightx = 0;
-                                                        JobConstraints2.anchor = GridBagConstraints.NORTH;
-                                                        int contorJob = 0;
-                                                        JobsPanel.removeAll();
-                                                        for (Job job : jButtonCompany.company.getJobs()) {
-                                                            JButton NameJob = new JButton(String.valueOf(job.name));
-                                                            NameJob.setEnabled(true);
-                                                            NameJob.setFocusable(false);
-                                                            NameJob.setPreferredSize(new Dimension(JobsPanel.getWidth(), 50));
-                                                            NameJob.setForeground(Color.BLACK);
-                                                            //NameJob.setBackground(Color.GREEN);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(NameJob, JobConstraints2);
-
-                                                            JButton NameCompany = new JButton(String.valueOf(job.company));
-                                                            NameCompany.setEnabled(true);
-                                                            NameCompany.setFocusable(false);
-                                                            NameCompany.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            NameCompany.setForeground(Color.BLACK);
-                                                            NameCompany.setBackground(Color.YELLOW);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(NameCompany, JobConstraints2);
-
-                                                            JButton Salariu = new JButton("Salariu");
-                                                            Salariu.setEnabled(true);
-                                                            Salariu.setFocusable(false);
-                                                            Salariu.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            Salariu.setForeground(Color.BLACK);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(Salariu, JobConstraints2);
-
-                                                            JButton Money = new JButton(String.valueOf(Double.valueOf(job.salary)));
-                                                            Money.setEnabled(true);
-                                                            Money.setFocusable(false);
-                                                            Money.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            Money.setForeground(Color.BLACK);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(Money, JobConstraints2);
-
-                                                            JButton AnAbsolvire = new JButton("CONSTRANGERE AN ABSOLVIRE");
-                                                            AnAbsolvire.setEnabled(true);
-                                                            AnAbsolvire.setFocusable(false);
-                                                            AnAbsolvire.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            AnAbsolvire.setForeground(Color.BLACK);
-                                                            AnAbsolvire.setBackground(Color.RED);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(AnAbsolvire, JobConstraints2);
-
-                                                            String[][] data1 = {{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
-                                                                    {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
-                                                            if (job.anAbsolvire.inferior == -1) {
-                                                                data1 = new String[][]{{"An minim", "null"},
-                                                                        {"An maxim", String.valueOf(Double.valueOf(job.anAbsolvire.superior).longValue())}};
-                                                            }
-                                                            if (job.anAbsolvire.superior == 3000) {
-                                                                data1 = new String[][]{{"An minim", String.valueOf(Double.valueOf(job.anAbsolvire.inferior).longValue())},
-                                                                        {"An maxim", "null"}};
-                                                            }
-                                                            if (job.anAbsolvire.inferior == -1 && job.anAbsolvire.superior == 3000) {
-                                                                data1 = new String[][]{{"An minim", "null"},
-                                                                        {"An maxim", "null"}};
-                                                            }
-
-                                                            JTable jTableJob = new JTable(data1, column);
-                                                            jTableJob.setSize(new Dimension(JobsPanel.getWidth(), 50));
-                                                            jTableJob.setEnabled(false);
-                                                            jTableJob.setFocusable(false);
-
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            jTableJob.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTableJob.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTableJob.setFillsViewportHeight(false);
-                                                            JScrollPane jScrollPaneJobs = new JScrollPane(jTableJob);
-                                                            jScrollPaneJobs.setPreferredSize(new Dimension(jTableJob.getWidth(), 3 * 20));
-                                                            JobsPanel.add(jScrollPaneJobs, JobConstraints2);
-
-                                                            JButton AniExperienta = new JButton("CONSTRANGERE EXPERIENTA");
-                                                            AniExperienta.setEnabled(true);
-                                                            AniExperienta.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            AniExperienta.setForeground(Color.BLACK);
-                                                            AniExperienta.setBackground(Color.ORANGE);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(AniExperienta, JobConstraints2);
-
-                                                            String[][] data6 = {{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
-                                                                    {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
-                                                            if (job.aniExperienta.inferior == -1) {
-                                                                data6 = new String[][]{{"Experienta minima", "null"},
-                                                                        {"Experienta maxima", String.valueOf(Double.valueOf(job.aniExperienta.superior).longValue())}};
-                                                            }
-                                                            if (job.aniExperienta.superior == 3000) {
-                                                                data6 = new String[][]{{"Experienta minima", String.valueOf(Double.valueOf(job.aniExperienta.inferior).longValue())},
-                                                                        {"Experienta maxima", "null"}};
-                                                            }
-                                                            if (job.aniExperienta.inferior == -1 && job.aniExperienta.superior == 3000) {
-                                                                data6 = new String[][]{{"Experienta minima", "null"},
-                                                                        {"Experienta maxima", "null"}};
-                                                            }
-
-                                                            JTable jTable6 = new JTable(data6, column);
-                                                            jTable6.setSize(new Dimension(JobsPanel.getWidth(), 50));
-                                                            jTable6.setEnabled(false);
-                                                            jTable6.setFocusable(false);
-
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            jTable6.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTable6.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTable6.setFillsViewportHeight(false);
-                                                            JScrollPane jScrollPane6 = new JScrollPane(jTable6);
-                                                            jScrollPane6.setPreferredSize(new Dimension(jTable6.getWidth(), 3 * 20));
-                                                            JobsPanel.add(jScrollPane6, JobConstraints2);
-
-                                                            JButton MedieNecesara = new JButton("CONSTRANGERE MEDIE");
-                                                            MedieNecesara.setEnabled(true);
-                                                            MedieNecesara.setFocusable(false);
-                                                            MedieNecesara.setPreferredSize(new Dimension(JobsPanel.getWidth(), 25));
-                                                            MedieNecesara.setForeground(Color.BLACK);
-                                                            MedieNecesara.setBackground(Color.BLUE);
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            JobsPanel.add(MedieNecesara, JobConstraints2);
-
-                                                            String[][] data7 = {{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
-                                                                    {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
-                                                            if (job.medieAcademica.inferior == -1) {
-                                                                data7 = new String[][]{{"Medie minima", "null"},
-                                                                        {"Medie maxima", String.valueOf(Double.valueOf(job.medieAcademica.superior).longValue())}};
-                                                            }
-                                                            if (job.medieAcademica.superior == 3000) {
-                                                                data7 = new String[][]{{"Medie minima", String.valueOf(Double.valueOf(job.medieAcademica.inferior).longValue())},
-                                                                        {"Medie maxima", "null"}};
-                                                            }
-                                                            if (job.medieAcademica.inferior == -1 && job.medieAcademica.superior == 3000) {
-                                                                data7 = new String[][]{{"Medie minima", "null"},
-                                                                        {"Medie maxima", "null"}};
-                                                            }
-
-                                                            JTable jTable7 = new JTable(data7, column);
-                                                            jTable7.setSize(new Dimension(JobsPanel.getWidth(), 50));
-                                                            jTable7.setEnabled(false);
-                                                            jTable7.setFocusable(false);
-
-                                                            JobConstraints2.gridy = contorJob;
-                                                            contorJob++;
-                                                            jTable7.getColumnModel().getColumn(0).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTable7.getColumnModel().getColumn(1).setPreferredWidth(JobsPanel.getWidth() / 2);
-                                                            jTable7.setFillsViewportHeight(false);
-                                                            JScrollPane jScrollPane7 = new JScrollPane(jTable7);
-                                                            jScrollPane7.setPreferredSize(new Dimension(jTable7.getWidth(), 3 * 20));
-                                                            JobsPanel.add(jScrollPane7, JobConstraints2);
-                                                        }
-                                                        JobConstraints2.weightx = 1;
-                                                        JobConstraints2.weighty = 1;
-                                                        JobConstraints2.gridy = contorJob;
-                                                        JobsPanel.add(new JLabel(" "), JobConstraints2);
-                                                        JobsPanel.setVisible(true);
                                                         pack();
                                                     }
 
@@ -1479,9 +1970,17 @@ public class GUIInterface extends JFrame {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     splitPaneCompany.setLeftComponent(LeftCompanyPanel);
-
                                     for (JButtonCompany jButtonCompany1 : jButtonCompanies) {
                                         if (jButtonCompany1.company.name.compareTo(jButton11.company.name) == 0) {
+                                            RecruitersPanel.removeAll();
+                                            EmployeeInfo.removeAll();
+                                            SalaryCalculate.setEnabled(false);
+                                            newEmployee.setLayout(new CardLayout());
+                                            JButton jLabelNewEmployee = new JButton("Choose a department");
+                                            jLabelNewEmployee.setPreferredSize(new Dimension(newEmployee.getWidth(), 50));
+                                            newEmployee.add(jLabelNewEmployee);
+                                            newEmployee.setVisible(true);
+                                            pack();
                                             jButtonCompany1.jButton.doClick();
                                         }
                                     }
@@ -1516,9 +2015,9 @@ public class GUIInterface extends JFrame {
         SplitUsersAdmin.setResizeWeight(0.15);
         SplitUsersAdmin.setEnabled(false);
 
-        UsersList = new JPanel();
+        JPanel usersList = new JPanel();
         //UsersList.setPreferredSize(SplitUsersAdmin.getLeftComponent().getPreferredSize());
-        UsersList.setLayout(new GridBagLayout());
+        usersList.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -1550,10 +2049,10 @@ public class GUIInterface extends JFrame {
 
         JButton ChooseUser = new JButton("Choose an user");
         ChooseUser.setBackground(Color.BLUE);
-        ChooseUser.setPreferredSize(new Dimension(UsersList.getWidth(), 20));
-        UsersList.add(ChooseUser, constraints);
+        ChooseUser.setPreferredSize(new Dimension(usersList.getWidth(), 20));
+        usersList.add(ChooseUser, constraints);
 
-        jScrollPane1 = new JScrollPane(UserInfo);
+        JScrollPane jScrollPane1 = new JScrollPane(UserInfo);
         jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         SplitUsersAdmin.setRightComponent(jScrollPane1);
@@ -1563,7 +2062,7 @@ public class GUIInterface extends JFrame {
         for (User user : application.Users) {
             JButton jButton = new JButton(user.cv.information.getNume() + " " + user.cv.information.getPrenume());
             jButton.setBackground(Color.GREEN);
-            jButton.setPreferredSize(new Dimension(UsersList.getWidth(), 40));
+            jButton.setPreferredSize(new Dimension(usersList.getWidth(), 40));
 
             jButton.addActionListener(new ActionListener() {
                 @Override
@@ -1761,16 +2260,16 @@ public class GUIInterface extends JFrame {
             });
 
             constraints.gridy = contor;
-            UsersList.add(jButton, constraints);
+            usersList.add(jButton, constraints);
             contor++;
         }
 
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.gridy = contor;
-        UsersList.add(new JLabel(" "), constraints);
-        SplitUsersAdmin.setLeftComponent(UsersList);
-        UsersList.setVisible(true);
+        usersList.add(new JLabel(" "), constraints);
+        SplitUsersAdmin.setLeftComponent(usersList);
+        usersList.setVisible(true);
         setContentPane(UserChoosedPage);
         setVisible(true);
         pack();
@@ -1838,9 +2337,29 @@ public class GUIInterface extends JFrame {
                     companyName = companyFinder.getText();
                     Application application = Application.getInstance();
                     if (application.getCompany(companyName) != null) {
-                        ProcessButton.setEnabled(true);
-                        jTabbedPane.setSelectedIndex(0);
-                        showRequests();
+                        if (ManagerType == 2) {
+                            ProcessButton.setEnabled(true);
+                            jTabbedPane.setSelectedIndex(1);
+                            jTabbedPane.setSelectedIndex(0);
+                            showRequests();
+                        }
+                        if (ManagerType == 1){
+                            if (Manager.company.compareTo(companyName) == 0) {
+                                ProcessButton.setEnabled(true);
+                                jTabbedPane.setSelectedIndex(1);
+                                jTabbedPane.setSelectedIndex(0);
+                                showRequests();
+                            } else {
+                                JFrame f = new JFrame();
+                                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                JDialog d = new JDialog(f, "Input data are wrong", true);
+                                d.setLayout(new FlowLayout());
+                                d.add(new JLabel("The manager does not belong to the company"));
+                                d.setSize(500, 150);
+                                d.setVisible(true);
+                                pack();
+                            }
+                        }
                     }
                 }
             }
@@ -1852,9 +2371,29 @@ public class GUIInterface extends JFrame {
                     companyName = companyFinder.getText();
                     Application application = Application.getInstance();
                     if (application.getCompany(companyName) != null) {
-                        jTabbedPane.setSelectedIndex(0);
-                        ProcessButton.setEnabled(true);
-                        showRequests();
+                        if (ManagerType == 2) {
+                            jTabbedPane.setSelectedIndex(1);
+                            jTabbedPane.setSelectedIndex(0);
+                            ProcessButton.setEnabled(true);
+                            showRequests();
+                        }
+                        if (ManagerType == 1){
+                            if (Manager.company.compareTo(companyName) == 0) {
+                                ProcessButton.setEnabled(true);
+                                jTabbedPane.setSelectedIndex(1);
+                                jTabbedPane.setSelectedIndex(0);
+                                showRequests();
+                            } else {
+                                JFrame f = new JFrame();
+                                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                JDialog d = new JDialog(f, "Input data are wrong", true);
+                                d.setLayout(new FlowLayout());
+                                d.add(new JLabel("The manager does not belong to the company"));
+                                d.setSize(500, 150);
+                                d.setVisible(true);
+                                pack();
+                            }
+                        }
                     }
                 }
             }
@@ -1894,7 +2433,7 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        jScrollPaneForRequest = new JScrollPane(jTabbedPane);
+        JScrollPane jScrollPaneForRequest = new JScrollPane(jTabbedPane);
         jScrollPaneForRequest.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPaneForRequest.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         Requests.setPreferredSize(companynameSplit.getRightComponent().getPreferredSize());
@@ -1934,9 +2473,29 @@ public class GUIInterface extends JFrame {
                 companyName = companyFinder.getText();
                 Application application = Application.getInstance();
                 if (application.getCompany(companyName) != null) {
-                    ProcessButton.setEnabled(true);
-                    jTabbedPane.setSelectedIndex(0);
-                    showRequests();
+                    if (ManagerType ==2 ) {
+                        ProcessButton.setEnabled(true);
+                        jTabbedPane.setSelectedIndex(1);
+                        jTabbedPane.setSelectedIndex(0);
+                        showRequests();
+                    }
+                    if (ManagerType == 1){
+                        if (Manager.company.compareTo(companyName) == 0) {
+                            ProcessButton.setEnabled(true);
+                            jTabbedPane.setSelectedIndex(1);
+                            jTabbedPane.setSelectedIndex(0);
+                            showRequests();
+                        } else {
+                            JFrame f = new JFrame();
+                            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                            JDialog d = new JDialog(f, "Input data are wrong", true);
+                            d.setLayout(new FlowLayout());
+                            d.add(new JLabel("The manager does not belong to the company"));
+                            d.setSize(500, 150);
+                            d.setVisible(true);
+                            pack();
+                        }
+                    }
                 }
             }
         });
@@ -2464,6 +3023,186 @@ public class GUIInterface extends JFrame {
                     name1.compareTo(user.cv.information.getPrenume() + " " + user.cv.information.getNume()) == 0) {
                 gasit = true;
                 System.out.println(user);
+                JButton nume = new JButton(user.cv.information.getNume() + " " + user.cv.information.getPrenume());
+                nume.setEnabled(true);
+                nume.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+                nume.setForeground(Color.BLACK);
+                nume.setBackground(Color.GREEN);
+
+                GridBagLayout gridBagLayout = new GridBagLayout();
+                TabelPanel.setLayout(gridBagLayout);
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.gridx = 0;
+                constraints.anchor = GridBagConstraints.NORTH;
+
+                constraints.gridy = contor;
+                contor++;
+                TabelPanel.add(nume, constraints);
+
+                JButton information = new JButton("Information");
+                information.setEnabled(true);
+                information.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                information.setForeground(Color.BLACK);
+                information.setBackground(Color.YELLOW);
+                constraints.gridy = contor;
+                contor++;
+                TabelPanel.add(information, constraints);
+
+                String[][] data = {{"Nume", user.cv.information.getNume()},
+                        {"Prenume", user.cv.information.getPrenume()},
+                        {"Sex", user.cv.information.getSex()},
+                        {"Data de nastere", user.cv.information.getData_de_nastere()},
+                        {"Telefon", user.cv.information.getTelefon()},
+                        {"Email", user.cv.information.getEmail()}};
+
+                String[] column = new String[]{"About", "Date"};
+                JTable jTable = new JTable(data, column);
+                jTable.setSize(new Dimension(TabelPanel.getWidth(), 50));
+                jTable.setEnabled(false);
+
+                constraints.gridy = contor;
+                contor++;
+                jTable.getColumnModel().getColumn(0).setPreferredWidth(TabelPanel.getWidth() / 2);
+                jTable.getColumnModel().getColumn(1).setPreferredWidth(TabelPanel.getWidth() / 2);
+                jTable.setFillsViewportHeight(false);
+                JScrollPane jScrollPane = new JScrollPane(jTable);
+                jScrollPane.setPreferredSize(new Dimension(TabelPanel.getWidth(), (7) * jTable.getRowHeight()));
+                if (jScrollPane.isWheelScrollingEnabled()) {
+                    jScrollPane.setPreferredSize(new Dimension(TabelPanel.getWidth(), (7) * jTable.getRowHeight() + 11));
+                }
+                TabelPanel.add(jScrollPane, constraints);
+
+                JButton limbi = new JButton("Limbi");
+                limbi.setEnabled(true);
+                limbi.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                limbi.setForeground(Color.BLACK);
+                limbi.setBackground(Color.DARK_GRAY);
+                constraints.gridy = contor;
+                contor++;
+                TabelPanel.add(limbi, constraints);
+
+                String[] column2 = new String[]{"Limba", "Nivel"};
+                String[][] data2 = new String[user.cv.information.getLanguages().size()][2];
+                int i = 0;
+                for (Limbi language : user.cv.information.getLanguages()) {
+                    data2[i][0] = language.getLimba();
+                    data2[i][1] = language.getLevel();
+                    i++;
+                }
+                JTable jTable2 = new JTable(data2, column2);
+                jTable2.setSize(new Dimension(TabelPanel.getWidth(), 50));
+                jTable2.setEnabled(false);
+                constraints.gridy = contor;
+                contor++;
+                jTable2.getColumnModel().getColumn(0).setPreferredWidth(TabelPanel.getWidth() / 2);
+                jTable2.getColumnModel().getColumn(1).setPreferredWidth(TabelPanel.getWidth() / 2);
+                jTable2.setFillsViewportHeight(false);
+                JScrollPane jScrollPane2 = new JScrollPane(jTable2);
+                jScrollPane2.setPreferredSize(new Dimension(TabelPanel.getWidth(), (user.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight()));
+                if (jScrollPane2.isWheelScrollingEnabled()) {
+                    jScrollPane2.setPreferredSize(new Dimension(TabelPanel.getWidth(), (user.cv.information.getLanguages().size() + 1) * jTable2.getRowHeight() + 11));
+                }
+                TabelPanel.add(jScrollPane2, constraints);
+
+                JButton Educations = new JButton("Educations");
+                Educations.setEnabled(true);
+                Educations.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                Educations.setForeground(Color.BLACK);
+                Educations.setBackground(Color.BLUE);
+                constraints.gridy = contor;
+                contor++;
+                TabelPanel.add(Educations, constraints);
+
+                for (Education education : user.cv.educations) {
+                    JButton buttons = new JButton();
+                    if (education.end != null) {
+                        buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                education.end.get(Calendar.DATE) + "." + education.end.get(Calendar.MONTH) + "." + education.end.get(Calendar.YEAR));
+                    } else {
+                        buttons.setText(education.start.get(Calendar.DATE) + "." + education.start.get(Calendar.MONTH) + "." + education.start.get(Calendar.YEAR) + " - " +
+                                "now");
+                    }
+                    buttons.setEnabled(true);
+                    buttons.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                    buttons.setForeground(Color.BLACK);
+                    buttons.setBackground(Color.RED);
+                    constraints.gridy = contor;
+                    contor++;
+                    TabelPanel.add(buttons, constraints);
+
+                    String[][] data3 = {{"Level", education.level},
+                            {"Institutie", education.institutie},
+                            {"Medie", education.medie.toString()}};
+
+                    JTable jTable3 = new JTable(data3, column);
+                    jTable3.setEnabled(false);
+                    jTable3.setSize(new Dimension(TabelPanel.getWidth(), 50));
+                    constraints.gridy = contor;
+                    contor++;
+                    jTable3.getColumnModel().getColumn(0).setPreferredWidth(TabelPanel.getWidth() / 2);
+                    jTable3.getColumnModel().getColumn(1).setPreferredWidth(TabelPanel.getWidth() / 2);
+                    jTable3.setFillsViewportHeight(false);
+                    JScrollPane jScrollPane3 = new JScrollPane(jTable3);
+                    jScrollPane3.setPreferredSize(new Dimension(TabelPanel.getWidth(), (4 * jTable3.getRowHeight())));
+                    if (jScrollPane3.isWheelScrollingEnabled()) {
+                        jScrollPane3.setPreferredSize(new Dimension(TabelPanel.getWidth(), (4 * jTable3.getRowHeight() + 11)));
+                    }
+                    TabelPanel.add(jScrollPane3, constraints);
+                }
+
+                JButton Experiences = new JButton("Experiences");
+                Experiences.setEnabled(true);
+                Experiences.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                Experiences.setForeground(Color.BLACK);
+                Experiences.setBackground(Color.BLUE);
+                constraints.gridy = contor;
+                contor++;
+                TabelPanel.add(Experiences, constraints);
+
+                for (Experience experience : user.cv.experiences) {
+                    JButton buttonsExperience = new JButton();
+                    if (experience.end != null) {
+                        buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                experience.end.get(Calendar.DATE) + "." + experience.end.get(Calendar.MONTH) + "." + experience.end.get(Calendar.YEAR));
+                    } else {
+                        buttonsExperience.setText(experience.start.get(Calendar.DATE) + "." + experience.start.get(Calendar.MONTH) + "." + experience.start.get(Calendar.YEAR) + " - " +
+                                "now");
+                    }
+                    buttonsExperience.setEnabled(true);
+                    buttonsExperience.setPreferredSize(new Dimension(TabelPanel.getWidth(), 25));
+                    buttonsExperience.setForeground(Color.BLACK);
+                    buttonsExperience.setBackground(Color.RED);
+                    constraints.gridy = contor;
+                    contor++;
+                    TabelPanel.add(buttonsExperience, constraints);
+
+                    String[][] data4 = {{"Company", experience.company},
+                            {"Departament", experience.department},
+                            {"Pozitie", experience.pozitie}};
+
+                    JTable jTable4 = new JTable(data4, column);
+                    jTable4.setSize(new Dimension(TabelPanel.getWidth(), 50));
+                    constraints.gridy = contor;
+                    contor++;
+                    jTable4.getColumnModel().getColumn(0).setPreferredWidth(TabelPanel.getWidth() / 2);
+                    jTable4.getColumnModel().getColumn(1).setPreferredWidth(TabelPanel.getWidth() / 2);
+                    jTable4.setFillsViewportHeight(false);
+                    jTable4.setEnabled(false);
+                    JScrollPane jScrollPane4 = new JScrollPane(jTable4);
+                    jScrollPane4.setPreferredSize(new Dimension(TabelPanel.getWidth(), (4 * jTable4.getRowHeight())));
+                    if (jScrollPane4.isWheelScrollingEnabled()) {
+                        jScrollPane4.setPreferredSize(new Dimension(TabelPanel.getWidth(), (4 * jTable4.getRowHeight() + 11)));
+                    }
+                    TabelPanel.add(jScrollPane4, constraints);
+                }
+
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                TabelPanel.add(new JLabel(" "), constraints);
+
+                TabelPanel.setVisible(true);
+                pack();
                 break;
             }
             for (String name : parts) {
@@ -2660,7 +3399,7 @@ public class GUIInterface extends JFrame {
     }
 }
 
-class JButtonEdited extends JButton {
+class JButtonEdited {
     Request<Job, Consumer> request;
     JButton jButton;
 
@@ -2670,7 +3409,7 @@ class JButtonEdited extends JButton {
     }
 }
 
-class JButtonCompany extends JButton {
+class JButtonCompany {
     JButton jButton;
     Company company;
 
@@ -2680,12 +3419,102 @@ class JButtonCompany extends JButton {
     }
 }
 
-class JButtonDepartment extends JButton {
+class JButtonDepartment {
     JButton jButton;
     Departament departament;
 
     public JButtonDepartment(Departament departament, String name) {
         this.departament = departament;
         jButton = new JButton(name);
+    }
+}
+
+class LoginPanel extends JPanel {
+    JTextField username, password, usernameJLabel, passwordJLabel, hintUsername, hintPassword;
+    JButton login, hint;
+    JPanel userNamePanel, passWordPanel, buttons;
+
+    public LoginPanel(String type, String hintUser, String hintPass) {
+        this.setPreferredSize(new Dimension(525, 200));
+        this.setMaximumSize(new Dimension(525, 200));
+        this.setMinimumSize(new Dimension(525, 200));
+        this.setBackground(new Color(27, 70, 75));
+
+        login = new JButton("Login");
+        login.setPreferredSize(new Dimension(120, 60));
+        login.setFocusable(false);
+        login.setEnabled(true);
+        hint = new JButton("Hint");
+        hint.setPreferredSize(new Dimension(120, 20));
+        hint.setFocusable(false);
+        hint.setEnabled(true);
+
+        username = new JTextField(20);
+        password = new JPasswordField(20);
+        hintUsername = new JTextField("", 20);
+        hintPassword = new JTextField("", 20);
+        if ("User".equals(type)) {
+            usernameJLabel = new JTextField("User Email", 20);
+        } else if ("Admin".equals(type)) {
+            usernameJLabel = new JTextField("Admin Username", 20);
+        } else if ("Manager".equals(type)) {
+            usernameJLabel = new JTextField("Manager", 20);
+        }
+        usernameJLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        usernameJLabel.setEditable(false);
+        usernameJLabel.setHorizontalAlignment(JTextField.CENTER);
+        passwordJLabel = new JTextField("Password", 20);
+        passwordJLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        passwordJLabel.setEditable(false);
+        passwordJLabel.setHorizontalAlignment(JTextField.CENTER);
+        hintUsername.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        hintUsername.setEditable(false);
+        hintUsername.setHorizontalAlignment(JTextField.CENTER);
+        hintUsername.setVisible(true);
+        hintPassword.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        hintPassword.setEditable(false);
+        hintPassword.setHorizontalAlignment(JTextField.CENTER);
+        hintPassword.setVisible(true);
+
+        setLayout(new GridBagLayout());
+
+        userNamePanel = new JPanel(new GridBagLayout());
+        passWordPanel = new JPanel(new GridBagLayout());
+        buttons = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        userNamePanel.add(usernameJLabel, constraints);
+        buttons.add(login, constraints);
+        passWordPanel.add(passwordJLabel, constraints);
+        constraints.gridy++;
+        buttons.add(hint, constraints);
+        userNamePanel.add(username, constraints);
+        passWordPanel.add(password, constraints);
+        constraints.gridy++;
+        userNamePanel.add(hintUsername, constraints);
+        passWordPanel.add(hintPassword, constraints);
+        constraints.gridwidth = GridBagConstraints.RELATIVE;
+        constraints.fill = GridBagConstraints.NONE;
+        this.add(userNamePanel, constraints);
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.gridx = 2;
+        this.add(passWordPanel, constraints);
+        constraints.gridy++;
+        constraints.gridy++;
+        constraints.gridx--;
+        this.add(buttons, constraints);
+
+        hint.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hintUsername.setText(hintUser);
+                hintPassword.setText(hintPass);
+            }
+        });
     }
 }
