@@ -41,7 +41,7 @@ public class Experience implements Comparable {
             }
         } else {
             this.start = start;
-            this.end = end;
+            this.end = null;
             this.pozitie = pozitie;
             this.company = company;
         }

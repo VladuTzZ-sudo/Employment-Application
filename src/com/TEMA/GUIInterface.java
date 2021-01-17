@@ -102,6 +102,8 @@ public class GUIInterface extends JFrame {
         managerPageButton.setFocusable(false);
         BackFromUserOrCompany.setFocusable(false);
 
+        //Pagina de deschidere va contine un SplitPane (= SplitLogin);
+        //mainLogin este container-ul initial, gol de sub cele trei butoane de Login.
         JPanel mainLogin = new JPanel();
         mainLogin.setBackground(new Color(27, 70, 75));
         UserLogin.setBackground(new Color(27, 70, 75));
@@ -114,6 +116,7 @@ public class GUIInterface extends JFrame {
         SplitLogin.setRightComponent(mainLogin);
         mainLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
 
+        //mainLogin - va fi inlocuit de alte 3 panel-uri corespunzatoare. Acestea vor lua locul mainLogin-ului cand butonul User, admin sau Manager login va fi apasat.
         LogUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,7 +131,6 @@ public class GUIInterface extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 AdminLoginCreatePanel();
                 SplitLogin.setRightComponent(AdminLogin);
-                //AdminLogin.setPreferredSize(new Dimension(SplitLogin.getRightComponent().getWidth(), SplitLogin.getRightComponent().getHeight()));
             }
         });
 
@@ -264,9 +266,7 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        this.setContentPane(SplitLogin);
-        setVisible(true);
-        pack();
+
         BackfromNotification.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -284,9 +284,15 @@ public class GUIInterface extends JFrame {
                 pack();
             }
         });
+
+        this.setContentPane(SplitLogin);
+        setVisible(true);
+        pack();
     }
 
     public void AdminLoginCreatePanel() {
+        //Pagina creeaza panel-ul corespunzator AdminLogin-ului.
+        //Va exista un singur cont de Admin = (admin, admin).
         AdminLogin.removeAll();
         LoginPanel Login = new LoginPanel("Admin", "admin", "admin");
         Login.setPreferredSize(new Dimension(525, 200));
@@ -323,6 +329,8 @@ public class GUIInterface extends JFrame {
     }
 
     public void ManagerLoginCreatePanel() {
+        //Fiecare manager va putea sa se conecteze doar cu (numecompanie, numecompanie).
+        //Iar in pagina sa, nu va putea vedea decat detaliile companiei sale, daca va incerca sa vada informatiile altei companii va primi un avertisment.
         ManagerLogin.removeAll();
         LoginPanel Login = new LoginPanel("Manager", "Google", "Google");
         Login.setPreferredSize(new Dimension(525, 200));
@@ -346,6 +354,8 @@ public class GUIInterface extends JFrame {
                     }
                 }
                 if (ManagerType != 1){
+                        //Pagina de manager se poate accesa si dintr-un cont de admin, de aceea folosesc aceasta variabile ManagerType pentru a sti cine acceseaza pagina Manager.
+                        //ManagerType = 0, logare esuata. ManagerType = 1 inseamna ca un manager acceseaza pagina, iar ManagerType = 2 inseamna ca adminul realizeaza actiunea.
                         Login.username.setText("");
                         Login.password.setText("");
                         JFrame f = new JFrame();
@@ -375,6 +385,9 @@ public class GUIInterface extends JFrame {
         Login.login.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Orice user se va putea loga doar cu email-ul ( = username ), iar ca parola ( = campul destinat sex-ului , ma gandeam ca ar putea fi mai usor pentru testare).
+                //Aici, la user = se va considera ca se poate loga un USER, un EMPLOYEE si un RECRUITER ( cei trei avand acces doar la pagina de profil a prietenilor sai, puteand sa-si vada prietenii si
+                // notificarile primite. )
                 intrat = false;
                 for (User user : Application.getInstance().Users) {
                     if (Login.username.getText().compareTo(user.cv.information.getEmail()) == 0
@@ -429,10 +442,12 @@ public class GUIInterface extends JFrame {
     }
 
     public void UserMainPageCreation() {
+        //Pagina care apare in momentul in care un utilizator se logheaza.
         UserMainPage = new JPanel();
         UserMainPage.setLayout(new GridBagLayout());
         UserMainPage.setBackground(new Color(27, 70, 75));
 
+        //Aici am realizat un panel separat pentru butonul destinat paginii de profil si pentru cel destinat paginii de notificari, pentru un design frumos.
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new GridBagLayout());
         jPanel.add(profilePageButton);
@@ -474,7 +489,6 @@ public class GUIInterface extends JFrame {
             }
         });
 
-        //JButton backButtonProfile = new JButton("mama");
         backButton2.removeActionListener(Arrays.stream(backButton2.getActionListeners()).findFirst().get());
         backButton2.addActionListener(new ActionListener() {
             @Override
@@ -497,6 +511,7 @@ public class GUIInterface extends JFrame {
         Friends.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Aici creez pagina de Consumers - Friends ai utilizatorului curent.
                 JSplitPane FriendsPanel = new JSplitPane();
 
                 FriendsPanel.setEnabled(false);
@@ -561,6 +576,7 @@ public class GUIInterface extends JFrame {
     }
 
     public void NotificationPanelCreation() {
+        //Aici creez pagina corespunzatoare notificarilor primite de un user.
         NotificationPanel.removeAll();
         NotificScroll.setPreferredSize(new Dimension(NotificationSplit.getRightComponent().getWidth(), NotificationSplit.getRightComponent().getHeight()));
         NotificationPanel.setLayout(new GridBagLayout());
@@ -574,6 +590,7 @@ public class GUIInterface extends JFrame {
 
         Application application = Application.getInstance();
         if (intrat) {
+            //Daca este un user, atunci are notificari personalizate.
             for (Notification notification : userLog.notifications) {
                 JButton NotiType = new JButton(notification.notificationType.toString());
                 NotiType.setPreferredSize(new Dimension(NotificationPanel.getWidth(), 25));
@@ -606,6 +623,7 @@ public class GUIInterface extends JFrame {
                 gridBagConstraints.gridy++;
             }
         } else {
+            //Daca este un employee atunci ni se aduce la cunostinta ca acesta este un employee (deci nu va avea cele mai importante notificari ).
             for (Company company : Application.getInstance().Companies) {
                 for (Departament departament : company.departaments) {
                     for (Employee employee : departament.getEmployees()) {
@@ -641,6 +659,9 @@ public class GUIInterface extends JFrame {
     }
 
     public void CompanyChoosedPageCreation() {
+        //In urma apasarii butonului "admin page", in urma login-ului admin-ului, exista posibilitatea de a alege apoi USERS/COMPANIES.
+        //Daca s-a ales Companies - atunci aceasta este functia care creeaza acesta pagina.
+
         JSplitPane CompanyChoosedPage = new JSplitPane();
         CompanyChoosedPage.setOrientation(JSplitPane.VERTICAL_SPLIT);
         JButton backFromCompanyChoosedPage = new JButton("Back");
@@ -650,6 +671,7 @@ public class GUIInterface extends JFrame {
         CompanyChoosedPage.setLeftComponent(backFromCompanyChoosedPage);
         CompanyChoosedPage.setEnabled(false);
 
+        //butonul de back.
         backFromCompanyChoosedPage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -672,6 +694,8 @@ public class GUIInterface extends JFrame {
         LeftCompanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getLeftComponent().getWidth(), splitPaneCompany.getLeftComponent().getHeight()));
         rightComapanyPanel.setPreferredSize(new Dimension(splitPaneCompany.getRightComponent().getWidth(), splitPaneCompany.getRightComponent().getHeight()));
 
+        //jTabbedPaneCompany = aici au fost initializate panel-urile din jTabbedPaneCompany, impreuna cu componenta lor Scroll care va fi folosita in locul simplelor panel-uri.
+        //De asemenea aici se initializeaza splitpanel-urile.
         JTabbedPane jTabbedPaneCompany = new JTabbedPane();
 
         EmployeesScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -710,6 +734,8 @@ public class GUIInterface extends JFrame {
         jTabbedPaneCompany.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                //Doar daca un employee este selectat atunci se activeaza butoanele si
+                //field-urile de mutare a acestuia in alt departament sau companie.
                 if (jTabbedPaneCompany.getSelectedIndex() == 1) {
                     Text2AdminMove.setEnabled(true);
                     TextAdminMove.setEnabled(true);
@@ -774,6 +800,7 @@ public class GUIInterface extends JFrame {
         ButtonAdminMove.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Mutarea efectiva a unui angajat.
                 if (SelectedEmployee != null) {
                     String companySelected = TextAdminMove.getText();
                     String departmentSelected = Text2AdminMove.getText();
@@ -837,6 +864,14 @@ public class GUIInterface extends JFrame {
         contor++;
         LeftCompanyPanel.add(Alege, constraints);
 
+        //De aici incepe constructia meniului din stanga la care am depus destul de mult efort.
+        //Daca apas pe o companie o data , atunci se deschide lista de departamente.
+        //Daca o companie are lista de departamente deschisa si apas pe ea, atunci
+        //lista de departamente se inchide.
+        //Daca o companie are lista de departamente deschisa si apas pe alta companie, atunci
+        //lista de departamente veche se inchide si se deschide cea noua.
+        //Astfel meniu-ul este foarte flexibil si de fiecare daca cand se intampla o actiune,
+        //celelalte panel-uri ( jobs, employeeInfo, employee se schimba corespunzator).
         Application application = Application.getInstance();
 
         for (Company company : application.Companies) {
@@ -873,8 +908,8 @@ public class GUIInterface extends JFrame {
                     Alege2.setBackground(Color.BLACK);
                     contor1++;
                     jPanel.add(Alege, constraints1);
-                    //ArrayList<Recruiter> recruiterArrayList = new ArrayList<>();
 
+                    //Pentru fiecare companie
                     for (Company company1 : application.Companies) {
                         JButtonCompany jButton11 = new JButtonCompany(company1, company1.name);
                         JButton jButton1 = jButton11.jButton;
@@ -885,10 +920,12 @@ public class GUIInterface extends JFrame {
                         contor1++;
                         jPanel.add(jButton1, constraints1);
 
+                        //Daca compania aleasa a fost si cea selectata, atunci pentru ea realizeaza:
                         if (company1.name.compareTo(jButtonCompany.company.name) == 0) {
                             jButton1.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
+                                    System.out.println("Aceasta a fost o companie al carui meniu de departamente a fost inchis");
                                     splitPaneCompany.setLeftComponent(LeftCompanyPanel);
                                     JButton Alege = new JButton("Choose a company");
                                     Alege.setPreferredSize(new Dimension(LeftCompanyPanel.getWidth(), 25));
@@ -913,6 +950,8 @@ public class GUIInterface extends JFrame {
                                 }
                             });
 
+                            //Se deschid toate amanuntele pentru o companie, doar atunci cand se deschide. ( JOBS, RECRUITERS si ADDEMPLOYEE - mesaj )
+
                             RecruitersPanel.setLayout(new GridBagLayout());
                             GridBagConstraints recruiterConstraints = new GridBagConstraints();
                             recruiterConstraints.gridy = 0;
@@ -923,6 +962,7 @@ public class GUIInterface extends JFrame {
                             recruiterConstraints.anchor = GridBagConstraints.NORTH;
                             int contorRecruiter = 0;
 
+                            //Se creeaza pagina de Recruiters.
                             for (Recruiter recruiter : company1.recruiters) {
                                 JButton score = new JButton(String.valueOf(recruiter.rating));
                                 score.setPreferredSize(new Dimension(RecruitersPanel.getWidth(), 25));
@@ -971,6 +1011,8 @@ public class GUIInterface extends JFrame {
                             int contorJob = 0;
                             JobsPanel.removeAll();
                             String[] column7 = new String[]{"About", "Date"};
+
+                            //Se creeaza pagina de job-uri.
                             for (Job job : jButtonCompany.company.getJobs()) {
                                 JButton NameJob = new JButton(String.valueOf(job.name));
                                 NameJob.setEnabled(true);
@@ -1137,6 +1179,7 @@ public class GUIInterface extends JFrame {
 
                             pack();
 
+                            //Se realizeaza lista de meniuri de departamente impreuna cu toate schimbarile din celelalte panel-uri care se leaga de aceasta schimbare.
                             for (Departament departament : jButtonCompany.company.departaments) {
                                 JButtonDepartment jButtonDepartment = new JButtonDepartment(departament, departament.getType());
                                 JButton jButton2 = jButtonDepartment.jButton;
@@ -1144,9 +1187,12 @@ public class GUIInterface extends JFrame {
                                 jButton2.setFocusable(false);
                                 jButton2.setBackground(Color.BLUE);
                                 SalaryCalculate.setEnabled(false);
+
+                                //Atunci cand se apasa pe un departament.
                                 jButton2.addActionListener(new ActionListener() {
                                     @Override
                                     public void actionPerformed(ActionEvent e) {
+                                        //Se creeaza pagina de Employee.
                                         EmployeesPanel.setLayout(new GridBagLayout());
                                         EmployeesPanel.removeAll();
                                         newEmployee.removeAll();
@@ -1162,6 +1208,7 @@ public class GUIInterface extends JFrame {
                                         bagConstraints.fill = GridBagConstraints.HORIZONTAL;
                                         bagConstraints.anchor = GridBagConstraints.NORTH;
 
+                                        //Se adauga tipul departamentului - buton dezactivat, albastru.
                                         JButton DepartmentType = new JButton(departament.getType());
                                         DepartmentType.setFocusable(false);
                                         DepartmentType.setEnabled(false);
@@ -1171,6 +1218,7 @@ public class GUIInterface extends JFrame {
 
                                         int contorEmployees = 1;
                                         for (Employee employee : jButtonDepartment.departament.getEmployees()) {
+                                            //Pentru fiecare employee, adaug un buton cu numele sau si o actiune a butonului.
                                             JButton employeeData = new JButton(employee.cv.information.getNume() + " " + employee.cv.information.getPrenume());
                                             employeeData.setEnabled(true);
                                             employeeData.setFocusable(false);
@@ -1181,6 +1229,7 @@ public class GUIInterface extends JFrame {
                                             employeeData.addActionListener(new ActionListener() {
                                                 @Override
                                                 public void actionPerformed(ActionEvent e) {
+                                                    //Atunci cand un employee este selectat, jtabbedPane isi schimba index-ul si se creeaza pagina noua - EmployeeInfo.
                                                     EmployeeInfo.removeAll();
                                                     EmployeeInfo.setLayout(new GridBagLayout());
                                                     SelectedEmployee = employee;
@@ -1407,6 +1456,9 @@ public class GUIInterface extends JFrame {
                                             EmployeesPanel.add(employeeData, bagConstraints);
                                         }
 
+
+                                        //Atunci cand se selecteaza un departament se activeaza si pagina de adaugare a unui nou angajat.
+                                        //Astfel dupa ce se va implementa un nou angajat, acesta va fi adaugat in compania si departamentul selectat.
                                         newEmployee.setLayout(new GridBagLayout());
                                         GridBagConstraints newConstraint = new GridBagConstraints();
                                         newConstraint.gridy = 0;
@@ -1627,7 +1679,9 @@ public class GUIInterface extends JFrame {
                                         newEmployee.add(addexperienta, newConstraint);
 
                                         final int[] contorTabel = {0};
-                                        //information
+
+                                        //Doar daca toate field-uri din tabel sunt completate, atunci butonul de information se activeaza.
+                                        //Dupa ce toate butoanele mai groase ( de grosime  50 ) se activeaza, doar atunci se activeaza si butonul principal addEmployee.
                                         jTable.addMouseListener(new MouseAdapter() {
                                             @Override
                                             public void mousePressed(MouseEvent e) {
@@ -1651,7 +1705,8 @@ public class GUIInterface extends JFrame {
                                         });
 
                                         final int[] contorTabel4 = {0};
-                                        //limbi
+                                        //Pentru tabelul de limbi, aceeasi regula, daca toate campurile sunt completate, atunci butonul de addlimba se aciveaza, dar acesta este doar un
+                                        //buton normal. In schimb daca o limba se va introduce in sistem, atunci butonul principal gros acestei sectiuni ("Add Languages") - se va activa.
                                         jTable4.addMouseListener(new MouseAdapter() {
                                             @Override
                                             public void mousePressed(MouseEvent e) {
@@ -1677,9 +1732,11 @@ public class GUIInterface extends JFrame {
                                                 @Override
                                                 public void actionPerformed(ActionEvent e) {
                                                     limbi.setEnabled(true);
+                                                    //se verifica, daca toate celelalte butoane secundare , "groase" sunt activate, atunci butonul "Adauga" - butonul principal aduagarii unui nou employee se va activa.
                                                     if (information.isEnabled() && educations.isEnabled() && experiences.isEnabled() && addSalary.isEnabled()) {
                                                         Adauga.setEnabled(true);
                                                     }
+                                                    //In rest, aici se adauga o limba noua in sistem, citind input-ul.
                                                     addlimba.setEnabled(false);
                                                     contorTabel4[0] = 0;
 
@@ -1710,13 +1767,14 @@ public class GUIInterface extends JFrame {
 
                                                     int i = 1;
                                                     for (int j = 0; j <= 1; j++) {
+                                                        //Se reseteaza campurile obligatorii.
                                                         jTable4.setValueAt("*required*", j, i);
                                                     }
                                                 }
                                             });
 
                                             final int[] contorTabel2 = {0};
-                                            //educatie
+                                            //Analog, tabel Limbi.
                                             jTable2.addMouseListener(new MouseAdapter() {
                                                 @Override
                                                 public void mousePressed(MouseEvent e) {
@@ -1818,6 +1876,7 @@ public class GUIInterface extends JFrame {
                                             });
 
                                             TreeSet<Experience> experienceTreeSet = new TreeSet<>();
+                                            //Analog tabel education, limbi.
                                             addexperienta.addActionListener(new ActionListener() {
                                                 @Override
                                                 public void actionPerformed(ActionEvent e) {
@@ -1871,6 +1930,7 @@ public class GUIInterface extends JFrame {
                                                 }
                                             });
 
+                                            //Foarte important, aici in salary input nu accept orice intrare, ci doar cifre , "punct" , enter, backspace si delete.
                                             salaryInput.addKeyListener(new KeyAdapter() {
                                                 @Override
                                                 public void keyTyped(KeyEvent e) {
@@ -1891,6 +1951,7 @@ public class GUIInterface extends JFrame {
                                             });
 
                                             Adauga.addActionListener(new ActionListener() {
+                                                //Se adauga un nou employee in sistem.
                                                 @Override
                                                 public void actionPerformed(ActionEvent e) {
                                                     String Nume = (String) jTable.getValueAt(0, 1);
@@ -1966,12 +2027,16 @@ public class GUIInterface extends JFrame {
                                 jPanel.add(jButton2, constraints1);
                             }
                         } else {
+                            //Aici se aplica ActionEvent-urile pentru celelalte companii care nu au fost selectate;
                             jButton1.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
+                                    //Se steaza ca Panel al componentei stanga a splitPane-lui , LEFTCOMPANYPANEL = panel-ul in care nici un meniu nu este deschis.
                                     splitPaneCompany.setLeftComponent(LeftCompanyPanel);
                                     for (JButtonCompany jButtonCompany1 : jButtonCompanies) {
                                         if (jButtonCompany1.company.name.compareTo(jButton11.company.name) == 0) {
+                                            //Daca se doreste inchiderea meniu-ului de departamente a unei companii si deschiderea meniu-ului de departamente
+                                            //a altei companii in acelasi timp.
                                             RecruitersPanel.removeAll();
                                             EmployeeInfo.removeAll();
                                             SalaryCalculate.setEnabled(false);
@@ -1981,6 +2046,8 @@ public class GUIInterface extends JFrame {
                                             newEmployee.add(jLabelNewEmployee);
                                             newEmployee.setVisible(true);
                                             pack();
+                                            //Se activeaza butonul de deschidere al setului nou de lista de departamente prin aceasta metoda.
+                                            //Pentru a realiza acest lucru am folosit butoane speciale din clasa JButtonCompany.
                                             jButtonCompany1.jButton.doClick();
                                         }
                                     }
@@ -2012,11 +2079,11 @@ public class GUIInterface extends JFrame {
     }
 
     public void UserChoosedPageCreation() {
+        //Pagina de users, din adminPage.
         SplitUsersAdmin.setResizeWeight(0.15);
         SplitUsersAdmin.setEnabled(false);
 
         JPanel usersList = new JPanel();
-        //UsersList.setPreferredSize(SplitUsersAdmin.getLeftComponent().getPreferredSize());
         usersList.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -2025,7 +2092,6 @@ public class GUIInterface extends JFrame {
         constraints.weighty = 0;
 
         UserInfo = new JPanel();
-        //UserInfo.setPreferredSize(SplitUsersAdmin.getRightComponent().getPreferredSize());
         UserInfo.setLayout(new GridBagLayout());
         GridBagConstraints constraints1 = new GridBagConstraints();
         constraints1.gridx = 0;
@@ -2299,7 +2365,6 @@ public class GUIInterface extends JFrame {
         AcceptButton = new JButton("Accept");
         AcceptButton.setBackground(Color.GREEN);
         AcceptButton.setEnabled(false);
-        //AcceptButton.setForeground(Color.GREEN);
         jPanelTopManager.add(AcceptButton);
 
         CancelButton = new JButton("Cancel");
@@ -2333,6 +2398,7 @@ public class GUIInterface extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
+                //Verifica tipul de acces, daca este accesat de admin sau de un manager si restrictioneaza accesul.
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     companyName = companyFinder.getText();
                     Application application = Application.getInstance();
@@ -2415,6 +2481,7 @@ public class GUIInterface extends JFrame {
         jTabbedPane.add("User's CV", UserRequest);
         jTabbedPane.add("Job info", JobRequest);
 
+        //Butonul de Accept si de Cancel se activeaza doar atunci cand se selcteaza un employee.
         jTabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -2444,6 +2511,7 @@ public class GUIInterface extends JFrame {
         ManagerPane.setRightComponent(splitPane);
         ManagerPane.setEnabled(false);
 
+        //ProcessButton apeleaza Manager.process().
         ProcessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -2486,6 +2554,7 @@ public class GUIInterface extends JFrame {
                             jTabbedPane.setSelectedIndex(0);
                             showRequests();
                         } else {
+                            //Daca manager-ul nu isi acceseaza propria companie.
                             JFrame f = new JFrame();
                             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             JDialog d = new JDialog(f, "Input data are wrong", true);
@@ -2625,6 +2694,8 @@ public class GUIInterface extends JFrame {
         Manager manager = (application.getCompany(companyName)).manager;
 
         int i = 0;
+
+        //Creeaza pagina de requests si celelalte pagini inrudite.
         for (Request<Job, Consumer> request : manager.requests) {
             bagConstraints.gridy = contor;
             JLabel labeltest = new JLabel(request.getKey().name);
@@ -3003,6 +3074,7 @@ public class GUIInterface extends JFrame {
     }
 
     public void ButtonSearchAction() {
+        //Creeaza panel-ul de profil al unui user, in profilePage.
         String name1 = CautareUsers.getText();
         String[] parts = name1.split(" ");
         System.out.println(name1);
@@ -3399,6 +3471,7 @@ public class GUIInterface extends JFrame {
     }
 }
 
+//Acestea sunt clase auxiliare in rezolvarea cerintelor.
 class JButtonEdited {
     Request<Job, Consumer> request;
     JButton jButton;
@@ -3430,6 +3503,7 @@ class JButtonDepartment {
 }
 
 class LoginPanel extends JPanel {
+    //Am folosit aceasta clasa pentru a forma un Jpanel care sa aiba un design frumos si sa poata fi folosit personalizat in program in functie de tipul de login.
     JTextField username, password, usernameJLabel, passwordJLabel, hintUsername, hintPassword;
     JButton login, hint;
     JPanel userNamePanel, passWordPanel, buttons;
