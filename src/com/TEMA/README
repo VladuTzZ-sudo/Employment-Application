@@ -1,0 +1,142 @@
+Matei Vlad Cristian
+321 CC
+
+Grad de dificultate : mediu ( acum ca am terminat tema mi se pare usoara, dar am fost ajutat de
+informatiile pe care ni le-ati oferit - structura temei, in schimb pentru ca a fost prima oara
+cand am realizat un proiect de aceasta avengura si pentru ca am incercat sa rezolv intreg bonus-ul
+am oferit grad - mediu)
+
+Timpul alocat rezolvarii : 1 saptamana - cerintele 1-2-3 , 1 saptamana interfata grafica + bonus
+
+Pentru ca am fost anuntati la curs ca tema o vom prezenta personal si ca astfel nu este necesar
+sa explicam amanuntit toate detaliile de implementare aici, ci doar aspectele importante voi
+explica in primul rand interfata grafica si ceva din modul in care am ales sa o implementez.
+
+Descriere:
+
+    :: Pagina de deschidere a aplicatiei prezinta trei butoane care genereaza 3 tipuri diferite
+    de login.
+    :: O data apasat un buton apare un meniu de login.
+    :: Acest meniu cuprinde o informatie legata de tipul de username, care in cazul unui
+    utilizator este email-ul sau, in cazul unui manager este compania sa, iar in cazul admin-ului
+    este = admin si o componenta password, care pentru un user este ( field-ul genre din cv ),
+    pentru un manager, este numele companiei ( pentru o testare usoara ), iar pentru admin este
+    = admin.
+    :: Aceste lucruri sunt precizate pentru o testare practica mai usoara a aplicatiei.
+    :: De asemenea, am implementat si un buton "hint" care oferta un exemplu de username si
+    password pentru fiecare tip de login, tot pentru o testare practica mai usoara.
+    :: Acest meniu de login este implementat cu ajutorul unei clase speciale, create de mine,
+    pentru a oferi flexibilitate si un aspect mai frumos, meniul fiind salvat intr-un jpanel
+    separat pe care eu pot sa-l pozitionez in centrul panel-ului principal.
+
+    1. Ce poate face un user odata ce s-a logat ?
+        -   Trebuie precizat ca am considerat un user ca fiind reprezentat de un User, Employee
+        sau Recruiter. Am ales acest lucru, deoarece nu sunt diferente de permisiuni.
+        -   Meniul de butoane este salvat intr-un jpanel separat celui principal ( care are
+        culoarea albastra si este de dimensiunea ferestrei ), pentru a oferi un design frumos si
+        elegant.
+        -   Fiecare astfel de utilizator are acces la ProfilePage, locul unde se poate cauta pe
+        sine si prietenii sai. Am considerat ca un utilizator nu va sti sa caute decat numele
+        sau si pe cel al prietenilor sai pe care ii poate gasi in "Friends". ( Poate ar fi
+        trebuit sa imbunatatesc programul pentru a nu oferi permisiuni unui user decat sa se
+        caute pe sine , si pe prietenii sai, in momentul prezent avand acces la intreaga baza
+        de date).
+        -   Este de precizat faptul ca un utilizator se poate gasi pe sine in ProfilePage in
+        functie de Nume | Prenume | Nume + Prenume | Prenume + Nume.
+        -   De asemenea, exista pagina Notifications , unde fiecare utilizator isi va gasi
+        notificarile corespunzatoare, conform cerintei.
+        -   Exista si o pagina Friends, unde un utilizator are acces la numele si prenumele
+        prietenilor sai ca apoi sa-i caute in ProfilePage.
+        -   Exista si un buton Logout care va intoarce utilizatorul in meniul de login.
+
+    2. Ce poate face un manager odata ce s-a logat ?
+        -   Acesta nu poate accesa pagina AdminPage, dar poate accesa pagina ManagerPage.
+        -   Aici, pentru a gasi informatii, el trebuie sa introduca numele companiei pe care o
+        reprezinta.
+        -   Daca el apartine, spre exemplu de Google, dar incearca sa citeasca datele companiei
+        Amazon, atunci va primi o eroare sub forma unei altei ferestre de atentionare.
+        -   Odata introdus numele companiei sale, el poate apasa butonul "Cauta" sau ENTER.
+        -   Astfel se va afisa lista cererilor de angajare ( nume + job ).
+        -   De asemenea in acest moment se va activa si butonul "PROCESS Automate" care
+        reprezinta metoda Manager.Process().
+        -   Daca manager-ul va apasa pe o cerere de angajare, acesta va primi detalii legate de
+        aceasta cerere. De asemenea, o data selectata o cerere de angajare, si pagina JobInfo
+        va detalia informatii legate de Job.
+        -   Odata selectata o cerere, se activeaza butoanele "Accept" si "Cancel" care ofera
+        posibilitatea manager-ului de a accepta manual sau de a respinge manual o cerere.
+        -   Daca o cerere este acceptata, aceea celelalte cereri de angajare ale persoanei in
+        cauza vor fi respinse atat de la compania curenta cat si de la celelalte companii.
+        -   De asemenea, daca nu mai exista locuri libere la acel job, atunci job-ul se inchide
+        si vor fi respinse si celelalte cereri de angajare pentru acel job si vor fi trimise
+        notificari.
+        -   Daca nu mai exista cereri de angajare, atunci toate butoanele enumerate mai sus
+        vor fi dezactivate pentru a "ocoli" erorile.
+
+    3. Ce poate face un admin odata ce s-a logat ?
+        -   Are acces la managerPage , dar exista o diferenta. Acesta poate acces informatiile
+        oricarei companii fara sa primeasca erori de permisiune.
+        -   De asemenea, acesta are acces la AdminPage.
+        -   AdminPage ii ofera posibilitatea de a alege sa observe informatiile legate de users
+        sau pe cele legate de compani.
+        -   In pagina destinata utilizatorilor, acesta poate vedea ce users ( persoane inca
+        neangajate au mai ramas in program ) si poate vedea detaliile legate de CV-ul lor.
+        -   In pagina Companies , acesta poate face mai multe lucruri : poate sa
+        alega o companie si un departament, poate sa calculeze bugetul de salarii pentru acel
+        departament, poate muta un angajat dintr-un departament al unei companii oriunde , adica
+        in orice alt departament din orice alta companie, poate vedea lista de angajati dintr-un
+        departament si daca se selecteaza un angajat prin click se pot vedea informatiile sale,
+        se pot vedea job-urile libere dintr-o companie si recruiterii dintr-o companie,
+        si se poate adauga un angajat nou intr-un departament dintr-o companie.
+
+            Cazul I)
+                =   Daca nu se alege nici o companie, atunci toate butoanele sunt dezactivate si
+                toate paginile sunt goale.
+
+            Cazul II)
+                =   Daca se apasa pe o companie, atunci vor aparea informatiile din pagina
+                Jobs si din pagina Recruiters , cat si din AddEmployee unde apare informatia ca
+                trebuie ales si un departament pentru a putea fi adaugat un nou angajat.
+
+            Cazul III)
+                =   Daca se alege un departament, atunci in pagina Employees va aparea lista de
+                angajati si se va activa pagina AddEmployee.
+                =   Daca se va face click, se va alege un angajat, atunci se va putea vedea si
+                pagina EmployeeInfo, pagina personalizata unui angajat.
+
+        -   Legat de pagina AddEmployee:
+            =   Un utilizator se va adauga prin apasarea butonului "Add Employee".
+            =   Exista "butoane groase" = {"Add Salary", "Add Information", "Add Languages",
+            "Add Educations", "Add Experiences"}
+            =   Daca toate aceste "butoane groase" sunt activate, atunci se va activa si
+            "Add Employee".
+            =   Am realizat acest algoritm pentru a forta utilizatorul aplicatiei sa tina cont
+            de campurile obligatorii.
+            =   Cum se activeaza un "buton gros" ?
+            =   Butonul "Add Salary" se va activa, doar dupa ce utilizatorul va introduce
+            un numar. - !! Aici puteti incerca sa introduceti litere sau alte caractere, dar
+            singurele acceptate vor fi ENTER, BACKSPACE, DELETE , "." si de la '0' la '9'.
+            =   Butonul "Add Information" se va activa doar dupa ce utlizatorul va completa
+            tot tabelul.
+            =   Butonul "Add Languages" se va activa doar dupa ce se va apasa butonul subtire
+            "Click to add language". Butonul "Click to add language" este dezactivat, dar se
+            va activa atunci cand toate campurile din tabelul destinat limbii sunt completate.
+            =   Este de ajuns sa adaugi o singura limba in sistem si butonul "Add Languages" va
+            ramane activat. Dar, poti adauga mai multe limbi, completand de mai multe ori
+            tabelul. De fiecare data cand butonul "Click to add language" este apasat,
+            campurile se resteaza, butonul "Click to add language" redevine dezactivat si
+            accepta sa primeasca noi date despre o alta limba aidoma primei limbi adaugate.
+            =   ANALOG , ADD_EDUCATIONS SI ADD_EXPERIENCES
+
+
+Mici detalii legate de algoritm, separat de interfata:
+    =   pentru a realiza "reteaua de utilizatori" am realizat fisierul "reteaSociala" si am
+    codat fiecare utilizator cu un numar. In functie de acest cod, pot forma lista de prieteni
+    ai fiecarui utilizator, citind fisierul de intrare.
+
+    =   De asemenea, pentru un utilizator cu 2 ani si 2 luni de experienta am aproximat
+    numar de ani la 3.
+
+    =   In clasa departament am adaugat o metoda abstracta care intoarce tipul departamentului.
+
+
+
